@@ -82,7 +82,7 @@ export default function AppSidebar() {
         ))}
         {/* Doctor Info */}
         <div className="mt-4 p-3 rounded-lg bg-sidebar-accent/50">
-          <p className="text-xs font-medium text-sidebar-foreground">Dr. James Chen</p>
+          <p className="text-xs font-medium text-sidebar-foreground">Dr. Rithika Singh</p>
           <p className="text-[10px] text-muted-foreground">Geriatric Medicine</p>
         </div>
       </div>

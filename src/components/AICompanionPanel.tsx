@@ -47,7 +47,7 @@ export default function AICompanionPanel() {
           <Brain className="w-5 h-5 text-primary-foreground" />
         </div>
         <div>
-          <h3 className="font-display text-lg text-foreground">AI Telecare Companion</h3>
+          <h3 className="font-display text-lg text-foreground">ShastyaAI Companion</h3>
           <p className="text-xs text-muted-foreground">Probabilistic health engine · Real-time monitoring</p>
         </div>
       </div>
