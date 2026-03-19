@@ -192,7 +192,7 @@ export const patients: Patient[] = [
     lastVisit: "2024-04-03",
     nextAppointment: "2024-04-17",
     caregiverName: "Maria Martinez",
-    doctorName: "Dr. James Chen",
+    doctorName: "Dr. Rithika Singh",
   },
 ];
 
