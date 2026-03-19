@@ -37,7 +37,7 @@ export default function AppSidebar() {
             <Shield className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display text-lg leading-tight text-sidebar-foreground">CareLink</h1>
+            <h1 className="font-display text-lg leading-tight text-sidebar-foreground">ShastyaAI</h1>
             <p className="text-xs text-muted-foreground">Geriatric AI Platform</p>
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function AppSidebar() {
         ))}
         {/* Doctor Info */}
         <div className="mt-4 p-3 rounded-lg bg-sidebar-accent/50">
-          <p className="text-xs font-medium text-sidebar-foreground">Dr. James Chen</p>
+          <p className="text-xs font-medium text-sidebar-foreground">Dr. Rithika Singh</p>
           <p className="text-[10px] text-muted-foreground">Geriatric Medicine</p>
         </div>
       </div>
