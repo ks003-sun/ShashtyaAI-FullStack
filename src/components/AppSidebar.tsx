@@ -37,7 +37,7 @@ export default function AppSidebar() {
             <Shield className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-display text-lg leading-tight text-sidebar-foreground">CareLink</h1>
+            <h1 className="font-display text-lg leading-tight text-sidebar-foreground">ShastyaAI</h1>
             <p className="text-xs text-muted-foreground">Geriatric AI Platform</p>
           </div>
         </div>
