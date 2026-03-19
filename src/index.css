@@ -6,91 +6,91 @@
 
 @layer base {
   :root {
-    --background: 40 33% 97%;
-    --foreground: 200 25% 15%;
+    --background: 220 20% 97%;
+    --foreground: 220 30% 10%;
 
-    --card: 40 30% 99%;
-    --card-foreground: 200 25% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 10%;
 
-    --popover: 40 30% 99%;
-    --popover-foreground: 200 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 10%;
 
-    --primary: 160 30% 38%;
-    --primary-foreground: 40 33% 97%;
+    --primary: 220 65% 42%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 40 20% 93%;
-    --secondary-foreground: 200 25% 20%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 30% 18%;
 
-    --muted: 40 15% 94%;
-    --muted-foreground: 200 10% 50%;
+    --muted: 220 12% 93%;
+    --muted-foreground: 220 10% 45%;
 
-    --accent: 160 20% 92%;
-    --accent-foreground: 160 30% 25%;
+    --accent: 220 20% 94%;
+    --accent-foreground: 220 40% 30%;
 
-    --destructive: 4 70% 58%;
-    --destructive-foreground: 40 33% 97%;
+    --destructive: 0 75% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 40 15% 90%;
-    --input: 40 15% 88%;
-    --ring: 160 30% 38%;
+    --border: 220 15% 87%;
+    --input: 220 15% 85%;
+    --ring: 220 65% 42%;
 
     --radius: 0.75rem;
 
-    /* Custom healthcare tokens */
-    --sage: 160 30% 38%;
-    --sage-light: 160 25% 92%;
-    --sage-dark: 160 35% 28%;
-    --coral: 4 70% 58%;
-    --coral-light: 4 60% 94%;
-    --amber: 38 85% 55%;
-    --amber-light: 38 70% 93%;
-    --teal: 180 35% 42%;
-    --teal-light: 180 30% 93%;
-    --lavender: 260 30% 60%;
-    --lavender-light: 260 25% 94%;
-    --cream: 40 33% 97%;
+    /* Healthcare tokens — higher contrast */
+    --sage: 152 45% 32%;
+    --sage-light: 152 30% 92%;
+    --sage-dark: 152 50% 22%;
+    --coral: 0 75% 50%;
+    --coral-light: 0 55% 94%;
+    --amber: 32 90% 48%;
+    --amber-light: 32 65% 92%;
+    --teal: 190 50% 35%;
+    --teal-light: 190 35% 92%;
+    --lavender: 260 40% 52%;
+    --lavender-light: 260 30% 93%;
+    --cream: 220 20% 97%;
 
-    --sidebar-background: 160 25% 96%;
-    --sidebar-foreground: 200 25% 20%;
-    --sidebar-primary: 160 30% 38%;
-    --sidebar-primary-foreground: 40 33% 97%;
-    --sidebar-accent: 160 20% 92%;
-    --sidebar-accent-foreground: 160 30% 25%;
-    --sidebar-border: 160 15% 90%;
-    --sidebar-ring: 160 30% 38%;
+    --sidebar-background: 220 30% 14%;
+    --sidebar-foreground: 220 10% 90%;
+    --sidebar-primary: 210 60% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 22%;
+    --sidebar-accent-foreground: 220 10% 90%;
+    --sidebar-border: 220 20% 20%;
+    --sidebar-ring: 210 60% 55%;
 
     --font-display: 'DM Serif Display', serif;
     --font-body: 'DM Sans', sans-serif;
   }
 
   .dark {
-    --background: 200 25% 8%;
-    --foreground: 40 20% 92%;
-    --card: 200 25% 10%;
-    --card-foreground: 40 20% 92%;
-    --popover: 200 25% 10%;
-    --popover-foreground: 40 20% 92%;
-    --primary: 160 35% 50%;
-    --primary-foreground: 200 25% 8%;
-    --secondary: 200 20% 15%;
-    --secondary-foreground: 40 20% 92%;
-    --muted: 200 15% 18%;
-    --muted-foreground: 200 10% 55%;
-    --accent: 160 20% 18%;
-    --accent-foreground: 160 30% 70%;
-    --destructive: 4 60% 45%;
-    --destructive-foreground: 40 20% 92%;
-    --border: 200 15% 18%;
-    --input: 200 15% 20%;
-    --ring: 160 35% 50%;
-    --sidebar-background: 200 25% 6%;
-    --sidebar-foreground: 40 20% 85%;
-    --sidebar-primary: 160 35% 50%;
-    --sidebar-primary-foreground: 200 25% 8%;
-    --sidebar-accent: 200 20% 15%;
-    --sidebar-accent-foreground: 160 30% 70%;
-    --sidebar-border: 200 15% 18%;
-    --sidebar-ring: 160 35% 50%;
+    --background: 220 25% 6%;
+    --foreground: 220 10% 92%;
+    --card: 220 25% 9%;
+    --card-foreground: 220 10% 92%;
+    --popover: 220 25% 9%;
+    --popover-foreground: 220 10% 92%;
+    --primary: 210 60% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 15%;
+    --secondary-foreground: 220 10% 85%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 220 20% 18%;
+    --accent-foreground: 210 50% 70%;
+    --destructive: 0 60% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 15% 18%;
+    --input: 220 15% 20%;
+    --ring: 210 60% 55%;
+    --sidebar-background: 220 30% 5%;
+    --sidebar-foreground: 220 10% 85%;
+    --sidebar-primary: 210 60% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 20% 12%;
+    --sidebar-accent-foreground: 210 50% 70%;
+    --sidebar-border: 220 15% 12%;
+    --sidebar-ring: 210 60% 55%;
   }
 }
 
