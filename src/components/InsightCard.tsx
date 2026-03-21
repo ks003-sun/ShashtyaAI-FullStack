@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { AlertTriangle, AlertCircle, Info, CheckCircle } from "lucide-react";
+import { AlertTriangle, AlertCircle, Info, CheckCircle, Stethoscope } from "lucide-react";
 import { HealthInsight } from "@/data/mockPatients";
 
 const typeConfig = {
@@ -29,6 +29,12 @@ export default function InsightCard({ insight, index }: { insight: HealthInsight
             <span className={`text-[10px] font-bold ${config.text}`}>{insight.confidence}% conf.</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">{insight.description}</p>
+          {insight.recommendation && (
+            <div className="mt-2 p-2 rounded-lg bg-muted/60 flex items-start gap-2">
+              <Stethoscope className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+              <p className="text-[11px] text-foreground leading-relaxed">{insight.recommendation}</p>
+            </div>
+          )}
           <p className="text-[10px] text-muted-foreground mt-2">{insight.date}</p>
         </div>
       </div>

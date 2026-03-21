@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Users, AlertCircle, ArrowRight } from "lucide-react";
+import { Users, AlertCircle, BarChart3 } from "lucide-react";
 import { FamilyMember } from "@/data/mockPatients";
 
 export default function FamilyRiskTree({ members, patientName }: { members: FamilyMember[]; patientName: string }) {
@@ -42,7 +42,7 @@ export default function FamilyRiskTree({ members, patientName }: { members: Fami
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-lavender-light flex items-center justify-center text-xs font-bold text-lavender">
-                  {member.name.split(" ").map(n => n[0]).join("")}
+                  {member.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">{member.name}</p>
@@ -59,7 +59,7 @@ export default function FamilyRiskTree({ members, patientName }: { members: Fami
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="space-y-2 mb-3">
               {member.riskFactors.map((risk, j) => (
                 <div key={j} className="flex items-center gap-2 text-[11px]">
                   <AlertCircle className="w-3.5 h-3.5 text-coral flex-shrink-0" />
@@ -67,6 +67,33 @@ export default function FamilyRiskTree({ members, patientName }: { members: Fami
                 </div>
               ))}
             </div>
+
+            {/* Confidence Matrix */}
+            {member.confidenceMatrix && member.confidenceMatrix.length > 0 && (
+              <div className="border-t border-border pt-3 space-y-2">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <BarChart3 className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[10px] font-bold text-foreground uppercase tracking-wide">Confidence Matrix</span>
+                </div>
+                {member.confidenceMatrix.map((cm, k) => (
+                  <div key={k} className="p-2 rounded-lg bg-muted/50">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[11px] font-medium text-foreground">{cm.condition}</span>
+                      <span className={`text-[10px] font-bold ${cm.probability >= 0.5 ? "text-coral" : cm.probability >= 0.3 ? "text-amber" : "text-sage"}`}>
+                        {Math.round(cm.probability * 100)}% risk
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 rounded-full bg-muted mb-1.5">
+                      <div
+                        className={`h-1.5 rounded-full ${cm.probability >= 0.5 ? "bg-coral" : cm.probability >= 0.3 ? "bg-amber" : "bg-sage"}`}
+                        style={{ width: `${cm.probability * 100}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">{cm.reasoning}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </motion.div>
       ))}
