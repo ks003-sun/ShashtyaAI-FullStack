@@ -15,6 +15,10 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (role === "caregiver") {
+      navigate("/caregiver/login");
+      return;
+    }
     setScanning(true);
     setTimeout(() => navigate("/dashboard"), 1800);
   };

@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import AppLayout from "@/components/AppLayout";
 import SplashPage from "@/pages/SplashPage";
 import LoginPage from "@/pages/LoginPage";
+import CaregiverLogin from "@/pages/CaregiverLogin";
+import CaregiverDashboard from "@/pages/CaregiverDashboard";
 import Dashboard from "@/pages/Dashboard";
 import PatientDetail from "@/pages/PatientDetail";
 import Alerts from "@/pages/Alerts";
@@ -23,6 +25,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<SplashPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/caregiver/login" element={<CaregiverLogin />} />
+          <Route path="/caregiver/dashboard" element={<CaregiverDashboard />} />
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/patient/:id" element={<PatientDetail />} />
