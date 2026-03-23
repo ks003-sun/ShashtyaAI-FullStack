@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { User, Mail, Building2, Calendar, Phone, Shield, Stethoscope, MapPin } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
+import { usePatientData } from "@/context/PatientDataContext";
 
 const doctorProfile = {
   name: "Dr. Rithika Singh",
@@ -14,15 +15,7 @@ const doctorProfile = {
   licenseNo: "MCI-2008-47832",
   specialization: "Geriatric Internal Medicine, Chronic Disease AI Analytics",
   experience: "18 years",
-  patientsManaged: 847,
 };
-
-const caregiverAccounts = [
-  { name: "Sunita Sharma", email: "sunita.sharma@shastyaai.health", role: "Primary Caregiver", patients: ["Kamala Devi Sharma"], lastLogin: "2024-04-05 09:12" },
-  { name: "Geeta Verma", email: "geeta.verma@shastyaai.health", role: "Primary Caregiver", patients: ["Ramesh Prasad Verma"], lastLogin: "2024-04-05 08:45" },
-  { name: "Subhash Das", email: "subhash.das@shastyaai.health", role: "Primary Caregiver", patients: ["Gopal Krishna Das"], lastLogin: "2024-04-04 19:30" },
-  { name: "Nasreen Sheikh", email: "nasreen.sheikh@shastyaai.health", role: "Primary Caregiver", patients: ["Abdul Karim Sheikh"], lastLogin: "2024-04-05 07:20" },
-];
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
@@ -39,23 +32,39 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
 }
 
 export default function Settings() {
+  const { patients } = usePatientData();
+
+  // Derive caregiver accounts from patients
+  const caregiverMap = new Map<string, { name: string; patients: string[]; lastLogin: string }>();
+  patients.forEach((p) => {
+    if (p.caregiverName && p.caregiverName !== "Self-managed") {
+      const existing = caregiverMap.get(p.caregiverName);
+      if (existing) {
+        existing.patients.push(p.name);
+      } else {
+        caregiverMap.set(p.caregiverName, {
+          name: p.caregiverName,
+          patients: [p.name],
+          lastLogin: "2024-04-05",
+        });
+      }
+    }
+  });
+  const caregiverAccounts = Array.from(caregiverMap.values());
+
   return (
     <div>
       <DashboardHeader title="Settings" subtitle="Doctor profile, caregiver accounts & system configuration" />
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Doctor Profile */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="card-healthcare p-6">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-xl font-bold text-primary-foreground">
-              RS
-            </div>
+            <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-xl font-bold text-primary-foreground">RS</div>
             <div>
               <h2 className="font-display text-xl text-foreground">{doctorProfile.name}</h2>
               <p className="text-xs text-muted-foreground">{doctorProfile.specialization}</p>
             </div>
           </div>
-
           <InfoRow icon={Mail} label="Email" value={doctorProfile.email} />
           <InfoRow icon={Phone} label="Phone" value={doctorProfile.phone} />
           <InfoRow icon={Calendar} label="Date of Birth" value={doctorProfile.dob} />
@@ -66,17 +75,10 @@ export default function Settings() {
           <InfoRow icon={User} label="Experience" value={doctorProfile.experience} />
         </motion.div>
 
-        {/* Caregiver Accounts */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="space-y-4">
-          <h2 className="font-display text-xl text-foreground">Caregiver Accounts</h2>
+          <h2 className="font-display text-xl text-foreground">Caregiver Accounts ({caregiverAccounts.length})</h2>
           {caregiverAccounts.map((cg, i) => (
-            <motion.div
-              key={cg.email}
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className="card-healthcare p-4"
-            >
+            <motion.div key={cg.name} initial={{ opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="card-healthcare p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-lavender-light flex items-center justify-center text-xs font-bold text-lavender">
@@ -84,14 +86,13 @@ export default function Settings() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">{cg.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{cg.email}</p>
+                    <p className="text-[10px] text-muted-foreground">{cg.name.toLowerCase().replace(/\s+/g, ".")}@shastyaai.health</p>
                   </div>
                 </div>
-                <span className="px-2 py-0.5 rounded-full bg-sage-light text-sage text-[10px] font-medium">{cg.role}</span>
+                <span className="px-2 py-0.5 rounded-full bg-sage-light text-sage text-[10px] font-medium">Primary Caregiver</span>
               </div>
               <div className="flex items-center justify-between text-[10px] text-muted-foreground mt-2">
                 <span>Patients: {cg.patients.join(", ")}</span>
-                <span>Last login: {cg.lastLogin}</span>
               </div>
             </motion.div>
           ))}
