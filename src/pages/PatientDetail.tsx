@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, User, Fingerprint, Stethoscope, Heart } from "lucide-react";
-import { patients } from "@/data/mockPatients";
+import { ArrowLeft, Calendar, User, Fingerprint, Stethoscope, Heart, Sparkles, CheckCircle, TrendingUp } from "lucide-react";
+import { usePatientData } from "@/context/PatientDataContext";
 import VitalsChart from "@/components/VitalsChart";
 import MedicationList from "@/components/MedicationList";
 import InsightCard from "@/components/InsightCard";
@@ -10,7 +10,10 @@ import FamilyRiskTree from "@/components/FamilyRiskTree";
 export default function PatientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const patient = patients.find((p) => p.id === id);
+  const { getPatientById, getSuggestionsForPatient, toggleSuggestion, getLogsForPatient } = usePatientData();
+  const patient = getPatientById(id || "");
+  const suggestions = getSuggestionsForPatient(id || "");
+  const logs = getLogsForPatient(id || "");
 
   if (!patient) {
     return (
@@ -24,7 +27,6 @@ export default function PatientDetail() {
 
   return (
     <div>
-      {/* Back button + header */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4">
           <ArrowLeft className="w-4 h-4" /> Back
@@ -65,7 +67,6 @@ export default function PatientDetail() {
       </motion.div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Left: Vitals + Meds */}
         <div className="lg:col-span-2 space-y-6">
           <h2 className="font-display text-xl text-foreground">Vitals Trends</h2>
           <div className="grid sm:grid-cols-2 gap-4">
@@ -77,9 +78,26 @@ export default function PatientDetail() {
 
           <h2 className="font-display text-xl text-foreground">Medications ({patient.medications.length})</h2>
           <MedicationList medications={patient.medications} />
+
+          {/* Caregiver Logs */}
+          {logs.length > 0 && (
+            <>
+              <h2 className="font-display text-xl text-foreground">Caregiver Observations</h2>
+              <div className="space-y-2">
+                {logs.map((log) => (
+                  <div key={log.id} className="card-healthcare p-4 text-xs">
+                    <p className="text-[10px] text-muted-foreground mb-1">{log.date} at {log.time}</p>
+                    {log.weight && <p><span className="text-muted-foreground">Weight:</span> <span className="font-medium text-foreground">{log.weight}</span></p>}
+                    {log.symptoms && <p className="text-amber mt-1">{log.symptoms}</p>}
+                    {log.notes && <p className="text-muted-foreground mt-1">{log.notes}</p>}
+                    {log.additionalMeds && <p className="text-teal mt-1">+ {log.additionalMeds}</p>}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
-        {/* Right: Insights + Family */}
         <div className="space-y-6">
           <h2 className="font-display text-xl text-foreground">AI Health Insights</h2>
           <div className="space-y-3">
@@ -87,6 +105,37 @@ export default function PatientDetail() {
               <InsightCard key={insight.id} insight={insight} index={i} />
             ))}
           </div>
+
+          {/* Daily Care Suggestions */}
+          {suggestions.length > 0 && (
+            <>
+              <h2 className="font-display text-xl text-foreground flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-teal" /> Daily Care Suggestions
+              </h2>
+              <div className="space-y-2">
+                {suggestions.map((s) => {
+                  const categoryColors = { physical: "teal", mental: "lavender", lifestyle: "sage" };
+                  const color = categoryColors[s.category];
+                  return (
+                    <div key={s.id} className={`card-healthcare p-3 ${s.completed ? "opacity-60" : ""}`}>
+                      <div className="flex items-start gap-2">
+                        <button onClick={() => toggleSuggestion(s.id)} className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 mt-0.5 ${s.completed ? `bg-${color} border-${color}` : "border-muted-foreground/40"}`}>
+                          {s.completed && <CheckCircle className="w-3 h-3 text-primary-foreground" />}
+                        </button>
+                        <div>
+                          <p className={`text-xs font-medium ${s.completed ? "line-through text-muted-foreground" : "text-foreground"}`}>{s.title}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{s.description}</p>
+                          <p className="text-[9px] text-muted-foreground mt-1 flex items-center gap-1">
+                            <TrendingUp className="w-2.5 h-2.5" />{s.trigger}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
 
           <h2 className="font-display text-xl text-foreground">Family Health Links</h2>
           <FamilyRiskTree members={patient.familyMembers} patientName={patient.name} />

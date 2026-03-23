@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, Activity, Heart, Bone, Clock, MapPin } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
-import { patients } from "@/data/mockPatients";
+import { usePatientData } from "@/context/PatientDataContext";
+import { useNavigate } from "react-router-dom";
 
 const eventTypeConfig = {
   fall: { icon: Bone, label: "Fall", bg: "bg-coral-light", text: "text-coral" },
@@ -11,6 +12,9 @@ const eventTypeConfig = {
 };
 
 export default function Alerts() {
+  const { patients } = usePatientData();
+  const navigate = useNavigate();
+
   const alertPatients = patients
     .filter((p) => p.recentEvents && p.recentEvents.length > 0)
     .sort((a, b) => {
@@ -29,7 +33,8 @@ export default function Alerts() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.06 }}
-            className="card-healthcare p-5"
+            className="card-healthcare p-5 cursor-pointer hover:shadow-md transition-all"
+            onClick={() => navigate(`/patient/${patient.id}`)}
           >
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -41,7 +46,6 @@ export default function Alerts() {
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span>{patient.age}y · {patient.gender}</span>
                     <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{patient.location}</span>
-                    <span>{patient.healthId}</span>
                   </div>
                 </div>
               </div>
