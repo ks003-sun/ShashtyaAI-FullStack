@@ -46,16 +46,6 @@ export default function CaregiverLogin() {
       <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full bg-teal/5 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/5 blur-[80px] pointer-events-none" />
 
-      {/* Grid lines background */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div key={i} className="absolute w-px h-full bg-foreground" style={{ left: `${(i + 1) * 5}%` }} />
-        ))}
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div key={`h${i}`} className="absolute h-px w-full bg-foreground" style={{ top: `${(i + 1) * 5}%` }} />
-        ))}
-      </div>
-
       <AnimatePresence>
         {scanning && (
           <motion.div
@@ -103,7 +93,6 @@ export default function CaregiverLogin() {
           {step === "otp" ? "Back" : "Back to role selection"}
         </motion.button>
 
-        {/* Logo */}
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-teal flex items-center justify-center shadow-lg">
             <HandHeart className="w-5 h-5 text-primary-foreground" />
@@ -151,15 +140,6 @@ export default function CaregiverLogin() {
                     <label className="text-xs font-medium text-foreground">Caregiver Name</label>
                     <Input
                       placeholder="Sunita Sharma"
-                      className="bg-card/40 backdrop-blur-sm border-border/40 focus:border-teal/60 h-10"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-foreground">Employee ID</label>
-                    <Input
-                      placeholder="CG-2024-XXXXX"
                       className="bg-card/40 backdrop-blur-sm border-border/40 focus:border-teal/60 h-10"
                       required
                     />
