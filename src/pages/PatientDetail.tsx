@@ -1,19 +1,29 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, User, Fingerprint, Stethoscope, Heart, Sparkles, CheckCircle, TrendingUp } from "lucide-react";
+import { ArrowLeft, Calendar, User, Fingerprint, Stethoscope, Heart, Sparkles, CheckCircle, TrendingUp, MapPin, FileText, Plus, X } from "lucide-react";
 import { usePatientData } from "@/context/PatientDataContext";
 import VitalsChart from "@/components/VitalsChart";
 import MedicationList from "@/components/MedicationList";
 import InsightCard from "@/components/InsightCard";
 import FamilyRiskTree from "@/components/FamilyRiskTree";
+import NearestHospitals from "@/components/NearestHospitals";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function PatientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getPatientById, getSuggestionsForPatient, toggleSuggestion, getLogsForPatient } = usePatientData();
+  const { getPatientById, getSuggestionsForPatient, toggleSuggestion, getLogsForPatient, getPrescriptionsForPatient, addDraftPrescription } = usePatientData();
   const patient = getPatientById(id || "");
   const suggestions = getSuggestionsForPatient(id || "");
   const logs = getLogsForPatient(id || "");
+  const prescriptions = getPrescriptionsForPatient(id || "");
+
+  const [showRxForm, setShowRxForm] = useState(false);
+  const [rxMeds, setRxMeds] = useState([{ name: "", dosage: "", frequency: "", duration: "" }]);
+  const [rxNotes, setRxNotes] = useState("");
 
   if (!patient) {
     return (
@@ -22,6 +32,27 @@ export default function PatientDetail() {
       </div>
     );
   }
+
+  const handleAddRxMed = () => setRxMeds((prev) => [...prev, { name: "", dosage: "", frequency: "", duration: "" }]);
+  const handleRemoveRxMed = (i: number) => setRxMeds((prev) => prev.filter((_, idx) => idx !== i));
+  const handleRxMedChange = (i: number, field: string, value: string) => {
+    setRxMeds((prev) => prev.map((m, idx) => idx === i ? { ...m, [field]: value } : m));
+  };
+
+  const handleSubmitRx = () => {
+    if (rxMeds.some((m) => m.name && m.dosage)) {
+      addDraftPrescription({
+        patientId: patient.id,
+        date: new Date().toISOString().split("T")[0],
+        medications: rxMeds.filter((m) => m.name),
+        notes: rxNotes,
+        status: "draft",
+      });
+      setRxMeds([{ name: "", dosage: "", frequency: "", duration: "" }]);
+      setRxNotes("");
+      setShowRxForm(false);
+    }
+  };
 
   const riskColors = { high: "text-coral", medium: "text-amber", low: "text-sage" };
 
@@ -39,11 +70,12 @@ export default function PatientDetail() {
               </div>
               <div>
                 <h1 className="font-display text-2xl text-foreground">{patient.name}</h1>
-                <div className="flex items-center gap-4 mt-1.5 text-xs text-muted-foreground">
+                <div className="flex items-center gap-4 mt-1.5 text-xs text-muted-foreground flex-wrap">
                   <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" />{patient.age}y · {patient.gender}</span>
                   <span className="flex items-center gap-1"><Fingerprint className="w-3.5 h-3.5" />{patient.healthId}</span>
                   <span className="flex items-center gap-1"><Stethoscope className="w-3.5 h-3.5" />{patient.doctorName}</span>
                   <span className="flex items-center gap-1"><Heart className="w-3.5 h-3.5" />{patient.caregiverName}</span>
+                  {patient.location && <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{patient.location}</span>}
                 </div>
               </div>
             </div>
@@ -79,6 +111,77 @@ export default function PatientDetail() {
           <h2 className="font-display text-xl text-foreground">Medications ({patient.medications.length})</h2>
           <MedicationList medications={patient.medications} />
 
+          {/* Draft Prescription */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-xl text-foreground flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" /> Draft Prescriptions
+              </h2>
+              {!showRxForm && (
+                <Button size="sm" onClick={() => setShowRxForm(true)} className="bg-primary hover:bg-primary/90">
+                  <Plus className="w-3.5 h-3.5 mr-1" /> New Prescription
+                </Button>
+              )}
+            </div>
+
+            {showRxForm && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="card-healthcare p-5 border-l-2 border-l-primary space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-foreground">New Draft Prescription</h3>
+                  <button onClick={() => setShowRxForm(false)} className="text-muted-foreground hover:text-foreground"><X className="w-4 h-4" /></button>
+                </div>
+                {rxMeds.map((med, i) => (
+                  <div key={i} className="grid grid-cols-2 sm:grid-cols-4 gap-2 items-end">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-medium text-muted-foreground">Medication</label>
+                      <Input placeholder="Drug name" value={med.name} onChange={(e) => handleRxMedChange(i, "name", e.target.value)} className="bg-card/40 border-border/40 h-9 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-medium text-muted-foreground">Dosage</label>
+                      <Input placeholder="e.g. 500mg" value={med.dosage} onChange={(e) => handleRxMedChange(i, "dosage", e.target.value)} className="bg-card/40 border-border/40 h-9 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-medium text-muted-foreground">Frequency</label>
+                      <Input placeholder="e.g. Twice daily" value={med.frequency} onChange={(e) => handleRxMedChange(i, "frequency", e.target.value)} className="bg-card/40 border-border/40 h-9 text-xs" />
+                    </div>
+                    <div className="flex gap-1 items-end">
+                      <div className="space-y-1 flex-1">
+                        <label className="text-[10px] font-medium text-muted-foreground">Duration</label>
+                        <Input placeholder="e.g. 30 days" value={med.duration} onChange={(e) => handleRxMedChange(i, "duration", e.target.value)} className="bg-card/40 border-border/40 h-9 text-xs" />
+                      </div>
+                      {rxMeds.length > 1 && (
+                        <button onClick={() => handleRemoveRxMed(i)} className="h-9 w-9 flex items-center justify-center text-muted-foreground hover:text-coral"><X className="w-3.5 h-3.5" /></button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <button onClick={handleAddRxMed} className="text-xs text-primary hover:underline flex items-center gap-1"><Plus className="w-3 h-3" /> Add medication</button>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-medium text-muted-foreground">Notes / Instructions</label>
+                  <Textarea placeholder="Additional instructions..." value={rxNotes} onChange={(e) => setRxNotes(e.target.value)} className="bg-card/40 border-border/40 min-h-[50px] text-xs" />
+                </div>
+                <Button onClick={handleSubmitRx} size="sm"><FileText className="w-3.5 h-3.5 mr-1" /> Save Draft</Button>
+              </motion.div>
+            )}
+
+            {prescriptions.map((rx) => (
+              <div key={rx.id} className="card-healthcare p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] text-muted-foreground">{rx.date}</p>
+                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-light text-amber font-medium uppercase">{rx.status}</span>
+                </div>
+                <div className="space-y-1">
+                  {rx.medications.map((m, i) => (
+                    <p key={i} className="text-xs text-foreground">
+                      <span className="font-medium">{m.name}</span> · {m.dosage} · {m.frequency} {m.duration && `· ${m.duration}`}
+                    </p>
+                  ))}
+                </div>
+                {rx.notes && <p className="text-[11px] text-muted-foreground mt-2 italic">{rx.notes}</p>}
+              </div>
+            ))}
+          </div>
+
           {/* Caregiver Logs */}
           {logs.length > 0 && (
             <>
@@ -99,6 +202,8 @@ export default function PatientDetail() {
         </div>
 
         <div className="space-y-6">
+          <NearestHospitals city={patient.location} />
+
           <h2 className="font-display text-xl text-foreground">AI Health Insights</h2>
           <div className="space-y-3">
             {patient.insights.map((insight, i) => (
