@@ -4,6 +4,7 @@ import StatCard from "@/components/StatCard";
 import PatientCard from "@/components/PatientCard";
 import AICompanionPanel from "@/components/AICompanionPanel";
 import InsightCard from "@/components/InsightCard";
+import NearestHospitals from "@/components/NearestHospitals";
 import { usePatientData } from "@/context/PatientDataContext";
 
 export default function Dashboard() {
@@ -46,6 +47,7 @@ export default function Dashboard() {
 
         <div className="space-y-6">
           <AICompanionPanel />
+          <NearestHospitals city={sortedPatients[0]?.location} />
           <div className="space-y-3">
             <h3 className="font-display text-lg text-foreground">Recent Alerts</h3>
             {criticalInsights.map((insight, i) => (
