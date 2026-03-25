@@ -15,10 +15,6 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (role === "caregiver") {
-      navigate("/caregiver/login");
-      return;
-    }
     setScanning(true);
     setTimeout(() => navigate("/dashboard"), 1800);
   };
@@ -124,7 +120,7 @@ export default function LoginPage() {
                 ].map((r) => (
                   <motion.button
                     key={r.id}
-                    onClick={() => setRole(r.id)}
+                    onClick={() => r.id === "caregiver" ? navigate("/caregiver/login") : setRole(r.id)}
                     className="group relative p-6 rounded-2xl border border-border/50 backdrop-blur-xl bg-card/40 hover:border-primary/40 transition-all text-left"
                     whileHover={{ scale: 1.03, boxShadow: "0 0 30px hsl(var(--primary) / 0.1)" }}
                     whileTap={{ scale: 0.97 }}
@@ -160,14 +156,8 @@ export default function LoginPage() {
               transition={{ duration: 0.3 }}
             >
               <div className="mb-6">
-                <h2 className="font-display text-xl text-foreground mb-1">
-                  {role === "doctor" ? "Doctor Login" : "Caregiver Login"}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {role === "doctor"
-                    ? "Access clinical dashboards and AI insights"
-                    : "Monitor patients and manage care tasks"}
-                </p>
+                <h2 className="font-display text-xl text-foreground mb-1">Doctor Login</h2>
+                <p className="text-sm text-muted-foreground">Access clinical dashboards and AI insights</p>
               </div>
 
               <form onSubmit={handleLogin} className="space-y-5">
@@ -188,11 +178,9 @@ export default function LoginPage() {
                 </motion.div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-foreground">
-                    {role === "doctor" ? "Medical License ID" : "Employee ID"}
-                  </label>
+                  <label className="text-xs font-medium text-foreground">Medical License ID</label>
                   <Input
-                    placeholder={role === "doctor" ? "MCI-XXXX-XXXXX" : "CG-XXXX-XXXXX"}
+                    placeholder="MCI-XXXX-XXXXX"
                     className="bg-card/40 backdrop-blur-sm border-border/40 focus:border-primary/60"
                     required
                   />
@@ -202,7 +190,7 @@ export default function LoginPage() {
                   <label className="text-xs font-medium text-foreground">Email</label>
                   <Input
                     type="email"
-                    placeholder={role === "doctor" ? "dr.singh@hospital.in" : "caregiver@facility.in"}
+                    placeholder="dr.singh@hospital.in"
                     className="bg-card/40 backdrop-blur-sm border-border/40 focus:border-primary/60"
                     required
                   />
