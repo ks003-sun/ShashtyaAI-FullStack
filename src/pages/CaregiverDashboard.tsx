@@ -121,6 +121,7 @@ export default function CaregiverDashboard() {
                   <span className="flex items-center gap-1"><Fingerprint className="w-3 h-3" />{patient.healthId}</span>
                   <span className="flex items-center gap-1"><Stethoscope className="w-3 h-3" />{patient.doctorName}</span>
                   {patient.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{patient.location}</span>}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-4">
