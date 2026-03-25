@@ -119,6 +119,7 @@ export default function LoginPage() {
                     icon: HandHeart,
                     label: "Caregiver",
                     desc: "Patient monitoring",
+                    link: "/caregiver/login",
                   },
                 ].map((r) => (
                   <motion.button
