@@ -31,6 +31,7 @@ export interface DraftPrescription {
   status: "draft" | "finalized";
 }
 
+export interface AdherenceRecord {
   patientId: string;
   medicationName: string;
   date: string;
