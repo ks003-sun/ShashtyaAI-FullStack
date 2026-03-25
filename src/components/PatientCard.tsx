@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { ChevronRight, AlertTriangle, Shield, Activity, MapPin } from "lucide-react";
 import { Patient } from "@/data/mockPatients";
 import { useNavigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 const riskConfig = {
   high: { badge: "badge-risk-high", icon: AlertTriangle, label: "High Risk" },
