@@ -120,7 +120,7 @@ export default function CaregiverDashboard() {
                   <span className="flex items-center gap-1"><User className="w-3 h-3" />{patient.age}y · {patient.gender}</span>
                   <span className="flex items-center gap-1"><Fingerprint className="w-3 h-3" />{patient.healthId}</span>
                   <span className="flex items-center gap-1"><Stethoscope className="w-3 h-3" />{patient.doctorName}</span>
-                </div>
+                  {patient.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{patient.location}</span>}
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -363,6 +363,36 @@ export default function CaregiverDashboard() {
                     </motion.div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {activeTab === "documents" && (
+              <div className="space-y-4">
+                <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx,.dicom,.dcm" />
+                <Button onClick={() => fileInputRef.current?.click()} className="w-full h-12 bg-teal hover:bg-teal/90 text-primary-foreground">
+                  <Upload className="w-4 h-4 mr-2" /> Upload Report / Scan
+                </Button>
+                <p className="text-[10px] text-muted-foreground text-center">Supports PDF, images, DICOM, and Office documents</p>
+
+                {documents.length > 0 ? (
+                  <div className="space-y-2.5">
+                    {documents.map((doc, i) => (
+                      <motion.div key={doc.id} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="card-healthcare p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <File className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
+                          <p className="text-[10px] text-muted-foreground">{doc.size} · Uploaded by {doc.uploadedBy} · {doc.date}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="card-healthcare p-8 text-center text-sm text-muted-foreground">No documents uploaded yet</div>
+                )}
+
+                <NearestHospitals city={patient.location} />
               </div>
             )}
           </motion.div>
