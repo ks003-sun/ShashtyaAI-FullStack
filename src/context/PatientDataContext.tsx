@@ -12,7 +12,25 @@ export interface CaregiverLog {
   additionalMeds?: string;
 }
 
-export interface AdherenceRecord {
+export interface PatientDocument {
+  id: string;
+  patientId: string;
+  name: string;
+  type: string;
+  size: string;
+  uploadedBy: string;
+  date: string;
+}
+
+export interface DraftPrescription {
+  id: string;
+  patientId: string;
+  date: string;
+  medications: { name: string; dosage: string; frequency: string; duration: string }[];
+  notes: string;
+  status: "draft" | "finalized";
+}
+
   patientId: string;
   medicationName: string;
   date: string;
@@ -35,13 +53,19 @@ interface PatientDataContextType {
   caregiverLogs: CaregiverLog[];
   adherenceRecords: AdherenceRecord[];
   careSuggestions: CareSuggestion[];
+  patientDocuments: PatientDocument[];
+  draftPrescriptions: DraftPrescription[];
   addCaregiverLog: (log: Omit<CaregiverLog, "id">) => void;
   toggleAdherence: (patientId: string, medicationName: string, date: string) => void;
   toggleSuggestion: (suggestionId: string) => void;
+  addPatientDocument: (doc: Omit<PatientDocument, "id">) => void;
+  addDraftPrescription: (rx: Omit<DraftPrescription, "id">) => void;
   getPatientById: (id: string) => Patient | undefined;
   getLogsForPatient: (patientId: string) => CaregiverLog[];
   getAdherenceForPatient: (patientId: string) => AdherenceRecord[];
   getSuggestionsForPatient: (patientId: string) => CareSuggestion[];
+  getDocumentsForPatient: (patientId: string) => PatientDocument[];
+  getPrescriptionsForPatient: (patientId: string) => DraftPrescription[];
 }
 
 const PatientDataContext = createContext<PatientDataContextType | null>(null);
