@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ChevronRight, AlertTriangle, Shield, Activity } from "lucide-react";
+import { ChevronRight, AlertTriangle, Shield, Activity, MapPin } from "lucide-react";
 import { Patient } from "@/data/mockPatients";
 import { useNavigate } from "react-router-dom";
 
@@ -29,6 +29,7 @@ export default function PatientCard({ patient, index }: { patient: Patient; inde
           <div>
             <h3 className="font-medium text-foreground group-hover:text-primary transition-colors">{patient.name}</h3>
             <p className="text-xs text-muted-foreground">{patient.age}y · {patient.gender} · {patient.healthId}</p>
+            {patient.location && <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" />{patient.location}</p>}
           </div>
         </div>
         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />

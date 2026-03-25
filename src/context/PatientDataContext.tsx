@@ -12,6 +12,25 @@ export interface CaregiverLog {
   additionalMeds?: string;
 }
 
+export interface PatientDocument {
+  id: string;
+  patientId: string;
+  name: string;
+  type: string;
+  size: string;
+  uploadedBy: string;
+  date: string;
+}
+
+export interface DraftPrescription {
+  id: string;
+  patientId: string;
+  date: string;
+  medications: { name: string; dosage: string; frequency: string; duration: string }[];
+  notes: string;
+  status: "draft" | "finalized";
+}
+
 export interface AdherenceRecord {
   patientId: string;
   medicationName: string;
@@ -35,13 +54,19 @@ interface PatientDataContextType {
   caregiverLogs: CaregiverLog[];
   adherenceRecords: AdherenceRecord[];
   careSuggestions: CareSuggestion[];
+  patientDocuments: PatientDocument[];
+  draftPrescriptions: DraftPrescription[];
   addCaregiverLog: (log: Omit<CaregiverLog, "id">) => void;
   toggleAdherence: (patientId: string, medicationName: string, date: string) => void;
   toggleSuggestion: (suggestionId: string) => void;
+  addPatientDocument: (doc: Omit<PatientDocument, "id">) => void;
+  addDraftPrescription: (rx: Omit<DraftPrescription, "id">) => void;
   getPatientById: (id: string) => Patient | undefined;
   getLogsForPatient: (patientId: string) => CaregiverLog[];
   getAdherenceForPatient: (patientId: string) => AdherenceRecord[];
   getSuggestionsForPatient: (patientId: string) => CareSuggestion[];
+  getDocumentsForPatient: (patientId: string) => PatientDocument[];
+  getPrescriptionsForPatient: (patientId: string) => DraftPrescription[];
 }
 
 const PatientDataContext = createContext<PatientDataContextType | null>(null);
@@ -171,6 +196,8 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
   const [caregiverLogs, setCaregiverLogs] = useState<CaregiverLog[]>(generateInitialLogs);
   const [adherenceRecords, setAdherenceRecords] = useState<AdherenceRecord[]>(() => generateInitialAdherence(initialPatients));
   const [careSuggestions, setCareSuggestions] = useState<CareSuggestion[]>(() => generateCareSuggestions(initialPatients));
+  const [patientDocuments, setPatientDocuments] = useState<PatientDocument[]>([]);
+  const [draftPrescriptions, setDraftPrescriptions] = useState<DraftPrescription[]>([]);
 
   const addCaregiverLog = useCallback((log: Omit<CaregiverLog, "id">) => {
     setCaregiverLogs((prev) => [{ ...log, id: `el${Date.now()}` }, ...prev]);
@@ -192,16 +219,26 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const addPatientDocument = useCallback((doc: Omit<PatientDocument, "id">) => {
+    setPatientDocuments((prev) => [{ ...doc, id: `doc${Date.now()}` }, ...prev]);
+  }, []);
+
+  const addDraftPrescription = useCallback((rx: Omit<DraftPrescription, "id">) => {
+    setDraftPrescriptions((prev) => [{ ...rx, id: `rx${Date.now()}` }, ...prev]);
+  }, []);
+
   const getPatientById = useCallback((id: string) => patients.find((p) => p.id === id), [patients]);
   const getLogsForPatient = useCallback((patientId: string) => caregiverLogs.filter((l) => l.patientId === patientId), [caregiverLogs]);
   const getAdherenceForPatient = useCallback((patientId: string) => adherenceRecords.filter((r) => r.patientId === patientId), [adherenceRecords]);
   const getSuggestionsForPatient = useCallback((patientId: string) => careSuggestions.filter((s) => s.patientId === patientId), [careSuggestions]);
+  const getDocumentsForPatient = useCallback((patientId: string) => patientDocuments.filter((d) => d.patientId === patientId), [patientDocuments]);
+  const getPrescriptionsForPatient = useCallback((patientId: string) => draftPrescriptions.filter((r) => r.patientId === patientId), [draftPrescriptions]);
 
   return (
     <PatientDataContext.Provider value={{
-      patients, caregiverLogs, adherenceRecords, careSuggestions,
-      addCaregiverLog, toggleAdherence, toggleSuggestion,
-      getPatientById, getLogsForPatient, getAdherenceForPatient, getSuggestionsForPatient,
+      patients, caregiverLogs, adherenceRecords, careSuggestions, patientDocuments, draftPrescriptions,
+      addCaregiverLog, toggleAdherence, toggleSuggestion, addPatientDocument, addDraftPrescription,
+      getPatientById, getLogsForPatient, getAdherenceForPatient, getSuggestionsForPatient, getDocumentsForPatient, getPrescriptionsForPatient,
     }}>
       {children}
     </PatientDataContext.Provider>
