@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Fingerprint, Stethoscope, Heart, Calendar,
   Activity, Droplets, Weight, Wind, Pill, Brain, Users, ClipboardPlus,
   AlertTriangle, TrendingUp, TrendingDown, Clock, Plus, Send, Shield,
-  HandHeart, LogOut, ChevronDown, ChevronUp, Sparkles, CheckCircle
+  HandHeart, LogOut, ChevronDown, ChevronUp, Sparkles, CheckCircle,
+  Upload, FileText, File, MapPin
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { usePatientData } from "@/context/PatientDataContext";
@@ -12,17 +13,21 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import VitalsChart from "@/components/VitalsChart";
+import NearestHospitals from "@/components/NearestHospitals";
 
 export default function CaregiverDashboard() {
   const navigate = useNavigate();
-  const { patients, getLogsForPatient, addCaregiverLog, getSuggestionsForPatient, toggleSuggestion } = usePatientData();
+  const { patients, getLogsForPatient, addCaregiverLog, getSuggestionsForPatient, toggleSuggestion, getDocumentsForPatient, addPatientDocument } = usePatientData();
 
   // Assigned patient for this caregiver
   const patient = patients[0];
   const entryLogs = getLogsForPatient(patient.id);
   const suggestions = getSuggestionsForPatient(patient.id);
 
-  const [activeTab, setActiveTab] = useState<"overview" | "vitals" | "meds" | "insights" | "family" | "log" | "care">("overview");
+  const documents = getDocumentsForPatient(patient.id);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [activeTab, setActiveTab] = useState<"overview" | "vitals" | "meds" | "insights" | "family" | "log" | "care" | "documents">("overview");
   const [newLog, setNewLog] = useState({ weight: "", symptoms: "", notes: "", additionalMeds: "" });
   const [showNewLog, setShowNewLog] = useState(false);
   const [expandedInsight, setExpandedInsight] = useState<string | null>(null);
@@ -58,7 +63,24 @@ export default function CaregiverDashboard() {
     { id: "care", label: "Care Tips", icon: Sparkles },
     { id: "family", label: "Family", icon: Users },
     { id: "log", label: "Entry Log", icon: ClipboardPlus },
+    { id: "documents", label: "Documents", icon: FileText },
   ] as const;
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    Array.from(files).forEach((file) => {
+      addPatientDocument({
+        patientId: patient.id,
+        name: file.name,
+        type: file.type || "application/octet-stream",
+        size: file.size < 1024 * 1024 ? `${(file.size / 1024).toFixed(1)} KB` : `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+        uploadedBy: patient.caregiverName,
+        date: new Date().toISOString().split("T")[0],
+      });
+    });
+    e.target.value = "";
+  };
 
   const riskColors: Record<string, string> = { high: "text-coral", medium: "text-amber", low: "text-sage" };
 
