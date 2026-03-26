@@ -90,7 +90,7 @@ export default function CaregiverDashboard() {
       <header className="sticky top-0 z-40 border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <ShastyaLogo height={28} />
+            <ShastyaLogo height={40} />
             <div>
               <p className="text-[10px] text-muted-foreground">Caregiver · Logged in as {patient.caregiverName}</p>
             </div>
