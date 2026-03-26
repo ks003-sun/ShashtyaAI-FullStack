@@ -7,6 +7,7 @@ import {
   HandHeart, LogOut, ChevronDown, ChevronUp, Sparkles, CheckCircle,
   Upload, FileText, File, MapPin
 } from "lucide-react";
+import ShastyaLogo from "@/components/ShastyaLogo";
 import { useNavigate } from "react-router-dom";
 import { usePatientData } from "@/context/PatientDataContext";
 import { Button } from "@/components/ui/button";
@@ -89,12 +90,9 @@ export default function CaregiverDashboard() {
       <header className="sticky top-0 z-40 border-b border-border/50 bg-card/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-teal flex items-center justify-center">
-              <HandHeart className="w-4 h-4 text-primary-foreground" />
-            </div>
+            <ShastyaLogo height={28} />
             <div>
-              <p className="text-sm font-medium text-foreground">ShastyaAI · Caregiver</p>
-              <p className="text-[10px] text-muted-foreground">Logged in as {patient.caregiverName}</p>
+              <p className="text-[10px] text-muted-foreground">Caregiver · Logged in as {patient.caregiverName}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">

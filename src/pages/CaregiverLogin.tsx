@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, HandHeart, Fingerprint, Eye, EyeOff, ArrowLeft, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import ShastyaLogo from "@/components/ShastyaLogo";
 import { Button } from "@/components/ui/button";
 
 export default function CaregiverLogin() {
@@ -93,14 +94,9 @@ export default function CaregiverLogin() {
           {step === "otp" ? "Back" : "Back to role selection"}
         </motion.button>
 
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-teal flex items-center justify-center shadow-lg">
-            <HandHeart className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="font-display text-xl text-foreground">ShastyaAI</h1>
-            <p className="text-[10px] text-muted-foreground tracking-wide uppercase">Caregiver Portal</p>
-          </div>
+        <div className="mb-6">
+          <ShastyaLogo height={36} />
+          <p className="text-[10px] text-muted-foreground tracking-wide uppercase mt-2">Caregiver Portal</p>
         </div>
 
         <div className="rounded-2xl border border-border/40 bg-card/50 backdrop-blur-xl p-6 shadow-xl">

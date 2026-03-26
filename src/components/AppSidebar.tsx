@@ -8,8 +8,8 @@ import {
   Network,
   Settings,
   Bell,
-  Shield,
 } from "lucide-react";
+import ShastyaLogo from "@/components/ShastyaLogo";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -32,15 +32,7 @@ export default function AppSidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col z-50">
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <Shield className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="font-display text-lg leading-tight text-sidebar-foreground">ShastyaAI</h1>
-            <p className="text-xs text-muted-foreground">Geriatric AI Platform</p>
-          </div>
-        </div>
+        <ShastyaLogo height={36} />
       </div>
 
       {/* Main Navigation */}
