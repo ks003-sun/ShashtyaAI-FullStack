@@ -32,7 +32,7 @@ export default function AppSidebar() {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col z-50">
       {/* Logo */}
       <div className="p-6 border-b border-sidebar-border">
-        <ShastyaLogo height={36} />
+        <ShastyaLogo height={48} />
       </div>
 
       {/* Main Navigation */}

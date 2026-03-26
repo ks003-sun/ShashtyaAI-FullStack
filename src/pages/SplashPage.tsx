@@ -160,7 +160,7 @@ export default function SplashPage() {
             <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-background" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
               <motion.div className="flex flex-col items-center gap-4">
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, ease: "linear", repeat: Infinity }}>
-                  <ShastyaLogo height={48} />
+                  <ShastyaLogo height={64} />
                 </motion.div>
                 <motion.p className="text-sm text-muted-foreground" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }}>Initializing AI Systems...</motion.p>
               </motion.div>
@@ -170,7 +170,7 @@ export default function SplashPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-12 min-h-screen flex flex-col">
           <motion.header className="flex items-center justify-between" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <ShastyaLogo height={44} />
+            <ShastyaLogo height={96} />
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Dna className="w-3.5 h-3.5 text-teal" />
               <span>Universal Health ID · Probabilistic Engine</span>
