@@ -5,12 +5,12 @@ interface ShastyaLogoProps {
   height?: number;
 }
 
-export default function ShastyaLogo({ className = "", height = 40 }: ShastyaLogoProps) {
+export default function ShastyaLogo({ className = "", height = 48 }: ShastyaLogoProps) {
   return (
     <img
       src={shastyaLogo}
       alt="ShastyaAI"
-      style={{ height }}
+      style={{ height: Math.max(32, height), width: "auto" }}
       className={`object-contain ${className}`}
     />
   );

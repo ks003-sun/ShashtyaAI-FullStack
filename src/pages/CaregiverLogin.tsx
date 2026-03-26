@@ -95,7 +95,7 @@ export default function CaregiverLogin() {
         </motion.button>
 
         <div className="mb-6">
-          <ShastyaLogo height={36} />
+          <ShastyaLogo height={48} />
           <p className="text-[10px] text-muted-foreground tracking-wide uppercase mt-2">Caregiver Portal</p>
         </div>
 

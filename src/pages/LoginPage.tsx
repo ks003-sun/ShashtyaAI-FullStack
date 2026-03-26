@@ -51,7 +51,7 @@ export default function LoginPage() {
         </motion.button>
 
         <div className="mb-8">
-          <ShastyaLogo height={44} />
+          <ShastyaLogo height={56} />
           <p className="text-xs text-muted-foreground mt-2">Secure Medical Access</p>
         </div>
 
