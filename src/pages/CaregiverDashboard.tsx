@@ -398,6 +398,7 @@ export default function CaregiverDashboard() {
           </motion.div>
         </AnimatePresence>
       </div>
+      <EmergencyButton />
     </div>
   );
 }
