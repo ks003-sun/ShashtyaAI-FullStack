@@ -132,7 +132,9 @@ export default function EmergencyButton({ patientId, patientName, patientLocatio
     ];
   }, [patientCoords, ambCoords, distance, eta, patientName]);
 
-  const stopRecognition = useCallback(() => {
+  const recognitionRef = useRef<any>(null);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
+
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
       recognitionRef.current = null;
