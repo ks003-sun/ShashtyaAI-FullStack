@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, Phone, X, AlertTriangle, CheckCircle, MapPin, Navigation } from "lucide-react";
 import { usePatientData } from "@/context/PatientDataContext";
 import type { SOSEmergencyType } from "@/context/PatientDataContext";
+import { getPatientCoords } from "@/data/patientCoordinates";
+import LeafletMap, { type MapMarker } from "./LeafletMap";
 
 // Multi-language emergency keywords (English + 6 Indian languages)
 const EMERGENCY_KEYWORDS: { keyword: string; lang: string; type: SOSEmergencyType; issue: string }[] = [
