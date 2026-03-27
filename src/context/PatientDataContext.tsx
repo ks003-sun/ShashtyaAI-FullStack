@@ -224,6 +224,21 @@ function generateInitialLogs(): CaregiverLog[] {
   ];
 }
 
+function generateInitialFollowUps(patients: Patient[]): FollowUp[] {
+  const reasons = ["BP recheck", "HbA1c review", "Medication review", "Kidney function panel", "Cardiac assessment", "Pulmonology review"];
+  return patients.slice(0, 6).map((p, i) => ({
+    id: `fu-init-${p.id}`,
+    patientId: p.id,
+    date: `2024-04-${String(8 + i * 3).padStart(2, "0")}`,
+    time: `${9 + i}:00`,
+    reason: reasons[i % reasons.length],
+    notes: p.riskLevel === "high" ? "Urgent — vitals trending poorly" : "",
+    priority: (p.riskLevel === "high" ? "urgent" : "routine") as "routine" | "urgent" | "critical",
+    status: "scheduled" as const,
+    createdBy: "Dr. Rithika Singh",
+  }));
+}
+
 export function PatientDataProvider({ children }: { children: ReactNode }) {
   const [patients] = useState<Patient[]>(initialPatients);
   const [caregiverLogs, setCaregiverLogs] = useState<CaregiverLog[]>(generateInitialLogs);
