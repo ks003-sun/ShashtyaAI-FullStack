@@ -101,7 +101,7 @@ export default function SplashPage() {
 
   return (
     <AnimatePresence>
-      <motion.div className="relative min-h-screen overflow-hidden" style={{ backgroundColor: '#0ABAB5' }} initial={{ opacity: 1 }} animate={transitioning ? { opacity: 0, scale: 1.02 } : { opacity: 1 }} transition={{ duration: 1 }}>
+      <motion.div className="relative min-h-screen overflow-hidden bg-background" initial={{ opacity: 1 }} animate={transitioning ? { opacity: 0, scale: 1.02 } : { opacity: 1 }} transition={{ duration: 1 }}>
         <GridLines />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/4 blur-[150px] pointer-events-none" />
 
