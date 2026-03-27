@@ -8,6 +8,8 @@ import MedicationList from "@/components/MedicationList";
 import InsightCard from "@/components/InsightCard";
 import FamilyRiskTree from "@/components/FamilyRiskTree";
 import NearestHospitals from "@/components/NearestHospitals";
+import VitalsRiskEngine from "@/components/VitalsRiskEngine";
+import FollowUpScheduler from "@/components/FollowUpScheduler";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -203,6 +205,10 @@ export default function PatientDetail() {
         </div>
 
         <div className="space-y-6">
+          <VitalsRiskEngine patient={patient} />
+
+          <FollowUpScheduler patientId={patient.id} />
+
           <NearestHospitals city={patient.location} />
 
           <h2 className="font-display text-xl text-foreground">AI Health Insights</h2>
