@@ -85,6 +85,7 @@ type Phase = "idle" | "listening" | "confirm" | "dispatched" | "tracking";
 interface EmergencyButtonProps {
   patientId?: string;
   patientName?: string;
+  patientLocation?: string;
 }
 
 // Simulated ambulance tracking
@@ -107,7 +108,7 @@ function useAmbulanceTracking(active: boolean) {
   return { distance, eta };
 }
 
-export default function EmergencyButton({ patientId, patientName }: EmergencyButtonProps) {
+export default function EmergencyButton({ patientId, patientName, patientLocation }: EmergencyButtonProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [transcript, setTranscript] = useState("");
   const [detected, setDetected] = useState("");
@@ -117,8 +118,19 @@ export default function EmergencyButton({ patientId, patientName }: EmergencyBut
   const { addSOSEvent } = usePatientData();
   const { distance, eta } = useAmbulanceTracking(phase === "tracking");
 
-  const recognitionRef = useRef<any>(null);
-  const countdownRef = useRef<NodeJS.Timeout | null>(null);
+  const patientCoords = useMemo(() => getPatientCoords(patientLocation), [patientLocation]);
+  const ambCoords = useMemo((): [number, number] => [
+    patientCoords[0] + 0.015 + Math.random() * 0.01,
+    patientCoords[1] + 0.015 + Math.random() * 0.01,
+  ], [patientCoords]);
+
+  const trackingMarkers: MapMarker[] = useMemo(() => {
+    const ambJitter = () => (Math.random() - 0.5) * 0.002 * distance;
+    return [
+      { id: "patient", lat: patientCoords[0], lng: patientCoords[1], label: patientName || "Patient", type: "patient" as const, popup: "Your location" },
+      { id: "ambulance", lat: ambCoords[0] - (ambCoords[0] - patientCoords[0]) * (1 - distance / 4.2) + ambJitter(), lng: ambCoords[1] - (ambCoords[1] - patientCoords[1]) * (1 - distance / 4.2) + ambJitter(), label: "Ambulance", type: "ambulance" as const, popup: `ETA: ${eta} min · ${distance} km` },
+    ];
+  }, [patientCoords, ambCoords, distance, eta, patientName]);
 
   const stopRecognition = useCallback(() => {
     if (recognitionRef.current) {
