@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, Phone, X, AlertTriangle, MapPin, Navigation } from "lucide-react";
+import { Mic, Phone, X, AlertTriangle, CheckCircle } from "lucide-react";
+import { usePatientData } from "@/context/PatientDataContext";
+import type { SOSEmergencyType } from "@/context/PatientDataContext";
 
 const EMERGENCY_KEYWORDS = [
   "help", "fall", "fell", "fallen", "chest pain", "can't breathe",
@@ -8,27 +10,46 @@ const EMERGENCY_KEYWORDS = [
   "stroke", "unconscious", "bleeding", "choking", "faint", "fainted"
 ];
 
-type Phase = "idle" | "listening" | "confirm" | "dispatched" | "tracking";
+const KEYWORD_CLASSIFICATION: Record<string, { type: SOSEmergencyType; issue: string }> = {
+  "chest pain": { type: "cardiac", issue: "Possible cardiac event — chest pain reported" },
+  "heart attack": { type: "cardiac", issue: "Suspected heart attack — immediate cardiac attention needed" },
+  "can't breathe": { type: "respiratory", issue: "Respiratory distress — patient unable to breathe" },
+  "cannot breathe": { type: "respiratory", issue: "Respiratory distress — patient unable to breathe" },
+  "breathing": { type: "respiratory", issue: "Breathing difficulty reported — monitor oxygen levels" },
+  "choking": { type: "respiratory", issue: "Choking incident — airway obstruction suspected" },
+  "fall": { type: "fall", issue: "Patient fall detected — assess for fractures or head injury" },
+  "fell": { type: "fall", issue: "Patient fall detected — assess for injuries" },
+  "fallen": { type: "fall", issue: "Patient fall detected — assess for injuries" },
+  "stroke": { type: "neurological", issue: "Suspected stroke — urgent neurological assessment needed" },
+  "unconscious": { type: "neurological", issue: "Patient unconscious — check vitals immediately" },
+  "faint": { type: "neurological", issue: "Patient fainted — possible syncope episode" },
+  "fainted": { type: "neurological", issue: "Patient fainted — possible syncope episode" },
+  "help": { type: "general", issue: "Patient called for help — assess situation" },
+  "emergency": { type: "general", issue: "Emergency triggered — immediate attention required" },
+  "ambulance": { type: "general", issue: "Ambulance requested — patient needs transport" },
+  "bleeding": { type: "general", issue: "Bleeding reported — assess severity and apply first aid" },
+};
 
-interface AmbulanceState {
-  lat: number;
-  lng: number;
-  distance: number;
-  eta: number;
+function classifyEmergency(keyword: string): { type: SOSEmergencyType; issue: string } {
+  return KEYWORD_CLASSIFICATION[keyword] || { type: "general", issue: "Emergency SOS triggered — assess patient immediately" };
 }
 
-export default function EmergencyButton() {
+type Phase = "idle" | "listening" | "confirm" | "dispatched";
+
+interface EmergencyButtonProps {
+  patientId?: string;
+  patientName?: string;
+}
+
+export default function EmergencyButton({ patientId, patientName }: EmergencyButtonProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [transcript, setTranscript] = useState("");
   const [detected, setDetected] = useState("");
   const [countdown, setCountdown] = useState(5);
-  const [ambulance, setAmbulance] = useState<AmbulanceState>({
-    lat: 12.9352, lng: 77.6245, distance: 4.2, eta: 8
-  });
+  const { addSOSEvent } = usePatientData();
 
   const recognitionRef = useRef<any>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
-  const trackingRef = useRef<NodeJS.Timeout | null>(null);
 
   const stopRecognition = useCallback(() => {
     if (recognitionRef.current) {
@@ -79,7 +100,6 @@ export default function EmergencyButton() {
     recognitionRef.current = recognition;
   }, []);
 
-  // Countdown for auto-confirm
   useEffect(() => {
     if (phase === "confirm") {
       setCountdown(5);
@@ -97,44 +117,36 @@ export default function EmergencyButton() {
     return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
   }, [phase]);
 
-  // Simulate ambulance tracking
-  useEffect(() => {
-    if (phase === "tracking") {
-      trackingRef.current = setInterval(() => {
-        setAmbulance(prev => {
-          const newDist = Math.max(0.1, prev.distance - (0.3 + Math.random() * 0.2));
-          const newEta = Math.max(1, Math.round(newDist * 2));
-          return {
-            lat: prev.lat + (Math.random() - 0.5) * 0.002,
-            lng: prev.lng + (Math.random() - 0.5) * 0.002,
-            distance: Math.round(newDist * 10) / 10,
-            eta: newEta
-          };
-        });
-      }, 3000);
-    }
-    return () => { if (trackingRef.current) clearInterval(trackingRef.current); };
-  }, [phase]);
-
   const handleConfirm = useCallback(() => {
     if (countdownRef.current) clearInterval(countdownRef.current);
+
+    const classification = classifyEmergency(detected);
+    addSOSEvent({
+      patientId: patientId || "unknown",
+      patientName: patientName || "Unknown Patient",
+      timestamp: new Date().toISOString(),
+      detectedKeyword: detected,
+      transcript,
+      emergencyType: classification.type,
+      predictedIssue: classification.issue,
+      acknowledged: false,
+    });
+
     setPhase("dispatched");
-    // Simulate API call
-    setTimeout(() => setPhase("tracking"), 2500);
-  }, []);
+  }, [detected, transcript, patientId, patientName, addSOSEvent]);
 
   const handleCancel = useCallback(() => {
     stopRecognition();
     if (countdownRef.current) clearInterval(countdownRef.current);
-    if (trackingRef.current) clearInterval(trackingRef.current);
     setPhase("idle");
     setTranscript("");
     setDetected("");
   }, [stopRecognition]);
 
+  const emergencyLabel = detected ? classifyEmergency(detected) : null;
+
   return (
     <>
-      {/* Floating Emergency Button */}
       {phase === "idle" && (
         <motion.button
           initial={{ scale: 0 }}
@@ -149,12 +161,10 @@ export default function EmergencyButton() {
             <Mic className="w-8 h-8 text-white mx-auto" />
             <span className="text-[9px] font-bold text-white/90 mt-0.5 block tracking-wide">SOS</span>
           </div>
-          {/* Pulse ring */}
           <span className="absolute inset-0 rounded-full animate-ping bg-red-500/30" />
         </motion.button>
       )}
 
-      {/* Full-screen overlays */}
       <AnimatePresence>
         {phase !== "idle" && (
           <motion.div
@@ -163,8 +173,7 @@ export default function EmergencyButton() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-background/98 backdrop-blur-md flex flex-col"
           >
-            {/* Close button */}
-            {(phase === "listening" || phase === "tracking") && (
+            {phase === "listening" && (
               <button
                 onClick={handleCancel}
                 className="absolute top-6 right-6 z-10 w-12 h-12 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80"
@@ -173,7 +182,6 @@ export default function EmergencyButton() {
               </button>
             )}
 
-            {/* LISTENING PHASE */}
             {phase === "listening" && (
               <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
                 <motion.div
@@ -185,7 +193,7 @@ export default function EmergencyButton() {
                 </motion.div>
                 <h1 className="font-display text-3xl text-foreground mb-3">Listening…</h1>
                 <p className="text-lg text-muted-foreground mb-8 max-w-md">
-                  Say what's happening. We'll detect emergencies like <span className="text-red-500 font-medium">"help"</span>, <span className="text-red-500 font-medium">"fall"</span>, <span className="text-red-500 font-medium">"chest pain"</span>, or <span className="text-red-500 font-medium">"can't breathe"</span>.
+                  Say what's happening. We'll detect emergencies like <span className="text-red-500 font-medium">"help"</span>, <span className="text-red-500 font-medium">"fall"</span>, <span className="text-red-500 font-medium">"chest pain"</span>.
                 </p>
                 <div className="w-full max-w-lg min-h-[80px] rounded-2xl bg-muted/50 border border-border/50 p-5 text-left">
                   <p className="text-sm text-muted-foreground mb-1 font-medium">Live transcript:</p>
@@ -196,7 +204,6 @@ export default function EmergencyButton() {
               </div>
             )}
 
-            {/* CONFIRM PHASE */}
             {phase === "confirm" && (
               <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
                 <motion.div
@@ -207,8 +214,13 @@ export default function EmergencyButton() {
                   <AlertTriangle className="w-14 h-14 text-red-600" />
                 </motion.div>
                 <h1 className="font-display text-3xl text-foreground mb-2">Emergency Detected</h1>
-                <p className="text-xl text-red-500 font-semibold mb-2">"{detected}"</p>
-                <p className="text-lg text-muted-foreground mb-8">
+                <p className="text-xl text-red-500 font-semibold mb-1">"{detected}"</p>
+                {emergencyLabel && (
+                  <p className="text-sm text-muted-foreground mb-1 px-3 py-1 rounded-full bg-muted inline-block capitalize">
+                    Type: {emergencyLabel.type}
+                  </p>
+                )}
+                <p className="text-lg text-muted-foreground mb-8 mt-2">
                   Calling for help in <span className="text-red-600 font-bold text-2xl">{countdown}s</span>
                 </p>
                 <div className="flex gap-4">
@@ -229,7 +241,6 @@ export default function EmergencyButton() {
               </div>
             )}
 
-            {/* DISPATCHED PHASE */}
             {phase === "dispatched" && (
               <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
                 <motion.div
@@ -237,128 +248,21 @@ export default function EmergencyButton() {
                   animate={{ scale: [0, 1.2, 1] }}
                   className="w-32 h-32 rounded-full bg-green-600/20 border-4 border-green-600 flex items-center justify-center mb-8"
                 >
-                  <Phone className="w-14 h-14 text-green-600" />
+                  <CheckCircle className="w-14 h-14 text-green-600" />
                 </motion.div>
                 <h1 className="font-display text-4xl text-foreground mb-3">Help is on the way</h1>
-                <p className="text-xl text-muted-foreground">An ambulance has been dispatched to your location.</p>
-                <motion.div
-                  animate={{ opacity: [0.3, 1, 0.3] }}
-                  transition={{ repeat: Infinity, duration: 1.5 }}
-                  className="mt-8 text-muted-foreground text-sm"
+                <p className="text-xl text-muted-foreground mb-2">Your doctor has been notified. Emergency services are being contacted.</p>
+                {emergencyLabel && (
+                  <p className="text-sm text-muted-foreground bg-muted px-4 py-2 rounded-lg mt-2">
+                    {emergencyLabel.issue}
+                  </p>
+                )}
+                <button
+                  onClick={handleCancel}
+                  className="mt-10 px-8 py-4 rounded-2xl bg-muted hover:bg-muted/80 text-foreground text-lg font-semibold transition-colors"
                 >
-                  Connecting to live tracking…
-                </motion.div>
-              </div>
-            )}
-
-            {/* TRACKING PHASE */}
-            {phase === "tracking" && (
-              <div className="flex-1 flex flex-col">
-                <div className="p-6 border-b border-border/50 flex items-center justify-between">
-                  <div>
-                    <h1 className="font-display text-2xl text-foreground flex items-center gap-2">
-                      <span className="w-3 h-3 rounded-full bg-green-500 animate-pulse" />
-                      Ambulance En Route
-                    </h1>
-                    <p className="text-sm text-muted-foreground mt-1">Live tracking active</p>
-                  </div>
-                  <div className="flex gap-6 text-right">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Distance</p>
-                      <p className="text-2xl font-bold text-foreground">{ambulance.distance} km</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">ETA</p>
-                      <p className="text-2xl font-bold text-red-500">{ambulance.eta} min</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Map area */}
-                <div className="flex-1 relative bg-muted/30 overflow-hidden">
-                  {/* Simulated map grid */}
-                  <div className="absolute inset-0 opacity-10">
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div key={`h-${i}`} className="absolute w-full border-t border-foreground/20" style={{ top: `${i * 5}%` }} />
-                    ))}
-                    {Array.from({ length: 20 }).map((_, i) => (
-                      <div key={`v-${i}`} className="absolute h-full border-l border-foreground/20" style={{ left: `${i * 5}%` }} />
-                    ))}
-                  </div>
-
-                  {/* Road lines */}
-                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M 20 80 Q 35 60 50 50 Q 65 40 75 25" stroke="hsl(var(--primary))" strokeWidth="0.5" fill="none" opacity="0.4" strokeDasharray="2,1" />
-                    <path d="M 10 50 L 90 50" stroke="hsl(var(--muted-foreground))" strokeWidth="0.3" fill="none" opacity="0.2" />
-                    <path d="M 50 10 L 50 90" stroke="hsl(var(--muted-foreground))" strokeWidth="0.3" fill="none" opacity="0.2" />
-                  </svg>
-
-                  {/* Patient marker */}
-                  <div className="absolute" style={{ bottom: '20%', left: '20%' }}>
-                    <div className="relative">
-                      <div className="w-5 h-5 rounded-full bg-primary border-2 border-primary-foreground shadow-lg" />
-                      <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-foreground whitespace-nowrap bg-background/80 px-2 py-0.5 rounded">You</span>
-                      <span className="absolute inset-0 rounded-full animate-ping bg-primary/30" />
-                    </div>
-                  </div>
-
-                  {/* Ambulance marker */}
-                  <motion.div
-                    animate={{
-                      bottom: `${20 + (1 - ambulance.distance / 4.2) * 40}%`,
-                      left: `${20 + (1 - ambulance.distance / 4.2) * 45}%`,
-                    }}
-                    transition={{ duration: 2.5, ease: "easeInOut" }}
-                    className="absolute"
-                  >
-                    <div className="relative">
-                      <div className="w-8 h-8 rounded-lg bg-red-600 border-2 border-white shadow-xl flex items-center justify-center">
-                        <Navigation className="w-4 h-4 text-white" />
-                      </div>
-                      <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-red-600 whitespace-nowrap bg-background/80 px-2 py-0.5 rounded">🚑 Ambulance</span>
-                      <span className="absolute inset-0 rounded-lg animate-ping bg-red-500/30" />
-                    </div>
-                  </motion.div>
-
-                  {/* Distance line */}
-                  <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <line
-                      x1="22" y1="78"
-                      x2={22 + (1 - ambulance.distance / 4.2) * 45}
-                      y2={78 - (1 - ambulance.distance / 4.2) * 40}
-                      stroke="hsl(0, 72%, 50%)"
-                      strokeWidth="0.4"
-                      strokeDasharray="1.5,1"
-                      opacity="0.6"
-                    />
-                  </svg>
-
-                  {/* Info card */}
-                  <div className="absolute bottom-6 left-6 right-6 bg-background/90 backdrop-blur-lg border border-border/50 rounded-2xl p-5 shadow-xl">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-red-600/10 flex items-center justify-center">
-                          <MapPin className="w-5 h-5 text-red-600" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-foreground">Ambulance approaching</p>
-                          <p className="text-xs text-muted-foreground">{ambulance.distance} km away · ETA {ambulance.eta} min</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">Unit</p>
-                        <p className="text-sm font-bold text-foreground">AMB-{Math.floor(Math.random() * 900 + 100)}</p>
-                      </div>
-                    </div>
-                    <div className="mt-3 w-full bg-muted rounded-full h-2 overflow-hidden">
-                      <motion.div
-                        className="h-full bg-red-600 rounded-full"
-                        animate={{ width: `${Math.max(5, (1 - ambulance.distance / 4.2) * 100)}%` }}
-                        transition={{ duration: 2 }}
-                      />
-                    </div>
-                  </div>
-                </div>
+                  Close
+                </button>
               </div>
             )}
           </motion.div>
