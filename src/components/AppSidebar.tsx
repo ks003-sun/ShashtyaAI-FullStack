@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { usePatientData } from "@/context/PatientDataContext";
 import {
   LayoutDashboard,
   Users,
@@ -27,6 +28,8 @@ const bottomItems = [
 
 export default function AppSidebar() {
   const location = useLocation();
+  const { sosEvents } = usePatientData();
+  const unacknowledgedCount = sosEvents.filter((e) => !e.acknowledged).length;
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col z-50">
@@ -70,6 +73,11 @@ export default function AppSidebar() {
           >
             <item.icon className="w-4 h-4" />
             {item.label}
+            {item.label === "Alerts" && unacknowledgedCount > 0 && (
+              <span className="ml-auto px-1.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-bold animate-pulse min-w-[18px] text-center">
+                {unacknowledgedCount}
+              </span>
+            )}
           </NavLink>
         ))}
         {/* Doctor Info */}
