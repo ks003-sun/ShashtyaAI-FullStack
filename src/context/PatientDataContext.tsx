@@ -38,6 +38,17 @@ export interface AdherenceRecord {
   taken: boolean;
 }
 
+export interface CareSuggestion {
+  id: string;
+  patientId: string;
+  category: "physical" | "mental" | "lifestyle";
+  title: string;
+  description: string;
+  trigger: string;
+  completed: boolean;
+  date: string;
+}
+
 export type SOSEmergencyType = "cardiac" | "respiratory" | "fall" | "neurological" | "general";
 
 export interface SOSEvent {
@@ -205,6 +216,15 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
   const [careSuggestions, setCareSuggestions] = useState<CareSuggestion[]>(() => generateCareSuggestions(initialPatients));
   const [patientDocuments, setPatientDocuments] = useState<PatientDocument[]>([]);
   const [draftPrescriptions, setDraftPrescriptions] = useState<DraftPrescription[]>([]);
+  const [sosEvents, setSOSEvents] = useState<SOSEvent[]>([]);
+
+  const addSOSEvent = useCallback((event: Omit<SOSEvent, "id">) => {
+    setSOSEvents((prev) => [{ ...event, id: `sos${Date.now()}` }, ...prev]);
+  }, []);
+
+  const acknowledgeSOS = useCallback((eventId: string) => {
+    setSOSEvents((prev) => prev.map((e) => e.id === eventId ? { ...e, acknowledged: true } : e));
+  }, []);
 
   const addCaregiverLog = useCallback((log: Omit<CaregiverLog, "id">) => {
     setCaregiverLogs((prev) => [{ ...log, id: `el${Date.now()}` }, ...prev]);
