@@ -1,4 +1,4 @@
-import { Users, AlertTriangle, Pill, Calendar, Brain, Activity, MapPin, ChevronRight } from "lucide-react";
+import { Users, AlertTriangle, Pill, Calendar, Brain, MapPin, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardHeader from "@/components/DashboardHeader";
 import StatCard from "@/components/StatCard";
