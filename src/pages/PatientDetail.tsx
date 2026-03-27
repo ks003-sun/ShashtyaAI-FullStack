@@ -11,6 +11,7 @@ import NearestHospitals from "@/components/NearestHospitals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import EmergencyButton from "@/components/EmergencyButton";
 
 export default function PatientDetail() {
   const { id } = useParams();
@@ -246,6 +247,7 @@ export default function PatientDetail() {
           <FamilyRiskTree members={patient.familyMembers} patientName={patient.name} />
         </div>
       </div>
+      <EmergencyButton />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import VitalsChart from "@/components/VitalsChart";
 import NearestHospitals from "@/components/NearestHospitals";
+import EmergencyButton from "@/components/EmergencyButton";
 
 export default function CaregiverDashboard() {
   const navigate = useNavigate();
@@ -397,6 +398,7 @@ export default function CaregiverDashboard() {
           </motion.div>
         </AnimatePresence>
       </div>
+      <EmergencyButton />
     </div>
   );
 }
