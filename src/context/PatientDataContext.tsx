@@ -49,6 +49,18 @@ export interface CareSuggestion {
   date: string;
 }
 
+export interface FollowUp {
+  id: string;
+  patientId: string;
+  date: string;
+  time: string;
+  reason: string;
+  notes: string;
+  priority: "routine" | "urgent" | "critical";
+  status: "scheduled" | "completed";
+  createdBy: string;
+}
+
 export type SOSEmergencyType = "cardiac" | "respiratory" | "fall" | "neurological" | "general";
 
 export interface SOSEvent {
