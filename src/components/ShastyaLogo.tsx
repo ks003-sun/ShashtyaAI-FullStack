@@ -10,7 +10,7 @@ export default function ShastyaLogo({ className = "", height = 48 }: ShastyaLogo
     <img
       src={shastyaLogo}
       alt="ShastyaAI"
-      style={{ height: Math.max(32, height), width: "auto" }}
+      style={{ height: Math.max(32, height * 2), width: "auto" }}
       className={`object-contain ${className}`}
     />
   );

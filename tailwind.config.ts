@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['DM Serif Display', 'serif'],
-        body: ['DM Sans', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
+        body: ['IBM Plex Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
