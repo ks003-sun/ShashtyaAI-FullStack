@@ -38,15 +38,18 @@ export interface AdherenceRecord {
   taken: boolean;
 }
 
-export interface CareSuggestion {
+export type SOSEmergencyType = "cardiac" | "respiratory" | "fall" | "neurological" | "general";
+
+export interface SOSEvent {
   id: string;
   patientId: string;
-  category: "physical" | "mental" | "lifestyle";
-  title: string;
-  description: string;
-  trigger: string;
-  completed: boolean;
-  date: string;
+  patientName: string;
+  timestamp: string;
+  detectedKeyword: string;
+  transcript: string;
+  emergencyType: SOSEmergencyType;
+  predictedIssue: string;
+  acknowledged: boolean;
 }
 
 interface PatientDataContextType {
@@ -56,6 +59,9 @@ interface PatientDataContextType {
   careSuggestions: CareSuggestion[];
   patientDocuments: PatientDocument[];
   draftPrescriptions: DraftPrescription[];
+  sosEvents: SOSEvent[];
+  addSOSEvent: (event: Omit<SOSEvent, "id">) => void;
+  acknowledgeSOS: (eventId: string) => void;
   addCaregiverLog: (log: Omit<CaregiverLog, "id">) => void;
   toggleAdherence: (patientId: string, medicationName: string, date: string) => void;
   toggleSuggestion: (suggestionId: string) => void;
@@ -67,6 +73,7 @@ interface PatientDataContextType {
   getSuggestionsForPatient: (patientId: string) => CareSuggestion[];
   getDocumentsForPatient: (patientId: string) => PatientDocument[];
   getPrescriptionsForPatient: (patientId: string) => DraftPrescription[];
+  getSOSEventsForPatient: (patientId: string) => SOSEvent[];
 }
 
 const PatientDataContext = createContext<PatientDataContextType | null>(null);
@@ -233,12 +240,14 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
   const getSuggestionsForPatient = useCallback((patientId: string) => careSuggestions.filter((s) => s.patientId === patientId), [careSuggestions]);
   const getDocumentsForPatient = useCallback((patientId: string) => patientDocuments.filter((d) => d.patientId === patientId), [patientDocuments]);
   const getPrescriptionsForPatient = useCallback((patientId: string) => draftPrescriptions.filter((r) => r.patientId === patientId), [draftPrescriptions]);
+  const getSOSEventsForPatient = useCallback((patientId: string) => sosEvents.filter((e) => e.patientId === patientId), [sosEvents]);
 
   return (
     <PatientDataContext.Provider value={{
-      patients, caregiverLogs, adherenceRecords, careSuggestions, patientDocuments, draftPrescriptions,
+      patients, caregiverLogs, adherenceRecords, careSuggestions, patientDocuments, draftPrescriptions, sosEvents,
+      addSOSEvent, acknowledgeSOS,
       addCaregiverLog, toggleAdherence, toggleSuggestion, addPatientDocument, addDraftPrescription,
-      getPatientById, getLogsForPatient, getAdherenceForPatient, getSuggestionsForPatient, getDocumentsForPatient, getPrescriptionsForPatient,
+      getPatientById, getLogsForPatient, getAdherenceForPatient, getSuggestionsForPatient, getDocumentsForPatient, getPrescriptionsForPatient, getSOSEventsForPatient,
     }}>
       {children}
     </PatientDataContext.Provider>
