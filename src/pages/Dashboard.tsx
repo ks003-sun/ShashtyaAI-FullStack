@@ -38,7 +38,6 @@ export default function Dashboard() {
     { icon: Pill, label: "Med Conflicts", value: medAlerts, color: "amber" as const },
     { icon: Calendar, label: "Appointments", value: patients.length, color: "teal" as const },
     { icon: Brain, label: "AI Insights", value: allInsights.length, change: "Active", changeType: "positive" as const, color: "lavender" as const },
-    { icon: Activity, label: "Avg Risk", value: `${Math.round((highRisk * 80 + (patients.length - highRisk) * 35) / patients.length)}/100`, color: "sage" as const },
   ];
 
   return (
