@@ -83,6 +83,7 @@ interface PatientDataContextType {
   patientDocuments: PatientDocument[];
   draftPrescriptions: DraftPrescription[];
   sosEvents: SOSEvent[];
+  followUps: FollowUp[];
   addSOSEvent: (event: Omit<SOSEvent, "id">) => void;
   acknowledgeSOS: (eventId: string) => void;
   addCaregiverLog: (log: Omit<CaregiverLog, "id">) => void;
@@ -90,6 +91,8 @@ interface PatientDataContextType {
   toggleSuggestion: (suggestionId: string) => void;
   addPatientDocument: (doc: Omit<PatientDocument, "id">) => void;
   addDraftPrescription: (rx: Omit<DraftPrescription, "id">) => void;
+  addFollowUp: (f: Omit<FollowUp, "id">) => void;
+  completeFollowUp: (id: string) => void;
   getPatientById: (id: string) => Patient | undefined;
   getLogsForPatient: (patientId: string) => CaregiverLog[];
   getAdherenceForPatient: (patientId: string) => AdherenceRecord[];
@@ -229,6 +232,7 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
   const [patientDocuments, setPatientDocuments] = useState<PatientDocument[]>([]);
   const [draftPrescriptions, setDraftPrescriptions] = useState<DraftPrescription[]>([]);
   const [sosEvents, setSOSEvents] = useState<SOSEvent[]>([]);
+  const [followUps, setFollowUps] = useState<FollowUp[]>(() => generateInitialFollowUps(initialPatients));
 
   const addSOSEvent = useCallback((event: Omit<SOSEvent, "id">) => {
     setSOSEvents((prev) => [{ ...event, id: `sos${Date.now()}` }, ...prev]);
@@ -266,6 +270,14 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
     setDraftPrescriptions((prev) => [{ ...rx, id: `rx${Date.now()}` }, ...prev]);
   }, []);
 
+  const addFollowUp = useCallback((f: Omit<FollowUp, "id">) => {
+    setFollowUps((prev) => [{ ...f, id: `fu${Date.now()}` }, ...prev]);
+  }, []);
+
+  const completeFollowUp = useCallback((id: string) => {
+    setFollowUps((prev) => prev.map((f) => f.id === id ? { ...f, status: "completed" as const } : f));
+  }, []);
+
   const getPatientById = useCallback((id: string) => patients.find((p) => p.id === id), [patients]);
   const getLogsForPatient = useCallback((patientId: string) => caregiverLogs.filter((l) => l.patientId === patientId), [caregiverLogs]);
   const getAdherenceForPatient = useCallback((patientId: string) => adherenceRecords.filter((r) => r.patientId === patientId), [adherenceRecords]);
@@ -276,9 +288,9 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
 
   return (
     <PatientDataContext.Provider value={{
-      patients, caregiverLogs, adherenceRecords, careSuggestions, patientDocuments, draftPrescriptions, sosEvents,
+      patients, caregiverLogs, adherenceRecords, careSuggestions, patientDocuments, draftPrescriptions, sosEvents, followUps,
       addSOSEvent, acknowledgeSOS,
-      addCaregiverLog, toggleAdherence, toggleSuggestion, addPatientDocument, addDraftPrescription,
+      addCaregiverLog, toggleAdherence, toggleSuggestion, addPatientDocument, addDraftPrescription, addFollowUp, completeFollowUp,
       getPatientById, getLogsForPatient, getAdherenceForPatient, getSuggestionsForPatient, getDocumentsForPatient, getPrescriptionsForPatient, getSOSEventsForPatient,
     }}>
       {children}
