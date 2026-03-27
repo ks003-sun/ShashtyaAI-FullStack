@@ -1,23 +1,49 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Stethoscope, HandHeart, Fingerprint, Eye, EyeOff, ArrowLeft } from "lucide-react";
+import { Stethoscope, HandHeart, User, Fingerprint, Eye, EyeOff, ArrowLeft, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ShastyaLogo from "@/components/ShastyaLogo";
+import { usePatientData } from "@/context/PatientDataContext";
 
-type Role = "doctor" | "caregiver" | null;
+type Role = "doctor" | "caregiver" | "patient" | null;
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { patients } = usePatientData();
   const [role, setRole] = useState<Role>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [patientName, setPatientName] = useState("");
+  const [patientError, setPatientError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleDoctorLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setScanning(true);
     setTimeout(() => navigate("/dashboard"), 1800);
+  };
+
+  const handlePatientLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    const match = patients.find(
+      (p) => p.name.toLowerCase().includes(patientName.toLowerCase()) || p.healthId.toLowerCase() === patientName.toLowerCase()
+    );
+    if (match) {
+      setPatientError("");
+      setScanning(true);
+      setTimeout(() => navigate(`/patient/${match.id}`), 1800);
+    } else {
+      setPatientError("No matching patient found. Try your name or Health ID.");
+    }
+  };
+
+  const handleRoleClick = (id: Role) => {
+    if (id === "caregiver") {
+      navigate("/caregiver/login");
+    } else {
+      setRole(id);
+    }
   };
 
   return (
@@ -51,7 +77,7 @@ export default function LoginPage() {
         </motion.button>
 
         <div className="mb-8">
-          <ShastyaLogo height={56} />
+          <ShastyaLogo height={112} />
           <p className="text-xs text-muted-foreground mt-2">Secure Medical Access</p>
         </div>
 
@@ -62,18 +88,19 @@ export default function LoginPage() {
                 <h2 className="font-display text-xl text-foreground mb-1">Welcome back</h2>
                 <p className="text-sm text-muted-foreground">Select your role to continue</p>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 {[
                   { id: "doctor" as const, icon: Stethoscope, label: "Doctor", desc: "Full clinical access" },
                   { id: "caregiver" as const, icon: HandHeart, label: "Caregiver", desc: "Patient monitoring" },
+                  { id: "patient" as const, icon: User, label: "Patient", desc: "View my records" },
                 ].map((r) => (
-                  <motion.button key={r.id} onClick={() => r.id === "caregiver" ? navigate("/caregiver/login") : setRole(r.id)} className="group relative p-6 rounded-2xl border border-border/50 backdrop-blur-xl bg-card/40 hover:border-primary/40 transition-all text-left" whileHover={{ scale: 1.03, boxShadow: "0 0 30px hsl(var(--primary) / 0.1)" }} whileTap={{ scale: 0.97 }}>
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                      <r.icon className="w-6 h-6 text-primary" />
+                  <motion.button key={r.id} onClick={() => handleRoleClick(r.id)} className="group relative p-5 rounded-2xl border border-border/50 backdrop-blur-xl bg-card/40 hover:border-primary/40 transition-all text-left" whileHover={{ scale: 1.03, boxShadow: "0 0 30px hsl(var(--primary) / 0.1)" }} whileTap={{ scale: 0.97 }}>
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                      <r.icon className="w-5 h-5 text-primary" />
                     </div>
-                    <p className="font-medium text-foreground">{r.label}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{r.desc}</p>
-                    <motion.div className="absolute bottom-0 left-4 right-4 h-[2px] rounded-full bg-gradient-to-r from-transparent via-primary to-transparent" initial={{ scaleX: 0 }} whileHover={{ scaleX: 1 }} transition={{ duration: 0.3 }} />
+                    <p className="font-medium text-foreground text-sm">{r.label}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{r.desc}</p>
+                    <motion.div className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full bg-gradient-to-r from-transparent via-primary to-transparent" initial={{ scaleX: 0 }} whileHover={{ scaleX: 1 }} transition={{ duration: 0.3 }} />
                   </motion.button>
                 ))}
               </div>
@@ -81,13 +108,37 @@ export default function LoginPage() {
                 <Fingerprint className="w-3 h-3" />End-to-end encrypted · HIPAA compliant
               </div>
             </motion.div>
+          ) : role === "patient" ? (
+            <motion.div key="patient-form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
+              <div className="mb-6">
+                <h2 className="font-display text-xl text-foreground mb-1">Patient Login</h2>
+                <p className="text-sm text-muted-foreground">Access your health records and insights</p>
+              </div>
+              <form onSubmit={handlePatientLogin} className="space-y-5">
+                <motion.div className="relative h-16 rounded-xl border border-border/30 bg-card/20 backdrop-blur-sm overflow-hidden flex items-center justify-center" whileHover={{ borderColor: "hsl(var(--teal) / 0.4)" }}>
+                  <motion.div className="absolute inset-0 bg-gradient-to-b from-teal/5 to-transparent" animate={{ y: ["-100%", "100%"] }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} />
+                  <div className="relative z-10 flex items-center gap-2 text-xs text-muted-foreground">
+                    <Fingerprint className="w-4 h-4 text-teal" />Biometric verification ready
+                  </div>
+                </motion.div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-foreground">Name or Health ID</label>
+                  <Input placeholder="e.g. Kamala Devi Sharma or UHID-2024-..." value={patientName} onChange={(e) => { setPatientName(e.target.value); setPatientError(""); }} className="bg-card/40 backdrop-blur-sm border-border/40 focus:border-teal/60" required />
+                  {patientError && <p className="text-xs text-destructive">{patientError}</p>}
+                </div>
+                <Button type="submit" className="w-full h-12 text-base font-medium">
+                  <User className="w-4 h-4 mr-2" />Access My Records
+                </Button>
+                <p className="text-center text-[11px] text-muted-foreground">Protected by AES-256 encryption</p>
+              </form>
+            </motion.div>
           ) : (
             <motion.div key="login-form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
               <div className="mb-6">
                 <h2 className="font-display text-xl text-foreground mb-1">Doctor Login</h2>
                 <p className="text-sm text-muted-foreground">Access clinical dashboards and AI insights</p>
               </div>
-              <form onSubmit={handleLogin} className="space-y-5">
+              <form onSubmit={handleDoctorLogin} className="space-y-5">
                 <motion.div className="relative h-16 rounded-xl border border-border/30 bg-card/20 backdrop-blur-sm overflow-hidden flex items-center justify-center" whileHover={{ borderColor: "hsl(var(--primary) / 0.4)" }}>
                   <motion.div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" animate={{ y: ["-100%", "100%"] }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} />
                   <div className="relative z-10 flex items-center gap-2 text-xs text-muted-foreground">
