@@ -253,7 +253,7 @@ export default function PatientDetail() {
           <FamilyRiskTree members={patient.familyMembers} patientName={patient.name} />
         </div>
       </div>
-      <EmergencyButton patientId={patient.id} patientName={patient.name} />
+      <EmergencyButton patientId={patient.id} patientName={patient.name} patientLocation={patient.location} />
     </div>
   );
 }

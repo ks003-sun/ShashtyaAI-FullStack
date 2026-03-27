@@ -398,7 +398,7 @@ export default function CaregiverDashboard() {
           </motion.div>
         </AnimatePresence>
       </div>
-      <EmergencyButton patientId={patient.id} patientName={patient.name} />
+      <EmergencyButton patientId={patient.id} patientName={patient.name} patientLocation={patient.location} />
     </div>
   );
 }
