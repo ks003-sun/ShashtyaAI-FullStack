@@ -1,8 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mic, Phone, X, AlertTriangle, CheckCircle, MapPin, Navigation } from "lucide-react";
 import { usePatientData } from "@/context/PatientDataContext";
 import type { SOSEmergencyType } from "@/context/PatientDataContext";
+import { getPatientCoords } from "@/data/patientCoordinates";
+import LeafletMap, { type MapMarker } from "./LeafletMap";
 
 // Multi-language emergency keywords (English + 6 Indian languages)
 const EMERGENCY_KEYWORDS: { keyword: string; lang: string; type: SOSEmergencyType; issue: string }[] = [
@@ -83,6 +85,7 @@ type Phase = "idle" | "listening" | "confirm" | "dispatched" | "tracking";
 interface EmergencyButtonProps {
   patientId?: string;
   patientName?: string;
+  patientLocation?: string;
 }
 
 // Simulated ambulance tracking
@@ -105,7 +108,7 @@ function useAmbulanceTracking(active: boolean) {
   return { distance, eta };
 }
 
-export default function EmergencyButton({ patientId, patientName }: EmergencyButtonProps) {
+export default function EmergencyButton({ patientId, patientName, patientLocation }: EmergencyButtonProps) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [transcript, setTranscript] = useState("");
   const [detected, setDetected] = useState("");
@@ -114,6 +117,20 @@ export default function EmergencyButton({ patientId, patientName }: EmergencyBut
   const [emergencyInfo, setEmergencyInfo] = useState<{ type: SOSEmergencyType; issue: string } | null>(null);
   const { addSOSEvent } = usePatientData();
   const { distance, eta } = useAmbulanceTracking(phase === "tracking");
+
+  const patientCoords = useMemo(() => getPatientCoords(patientLocation), [patientLocation]);
+  const ambCoords = useMemo((): [number, number] => [
+    patientCoords[0] + 0.015 + Math.random() * 0.01,
+    patientCoords[1] + 0.015 + Math.random() * 0.01,
+  ], [patientCoords]);
+
+  const trackingMarkers: MapMarker[] = useMemo(() => {
+    const ambJitter = () => (Math.random() - 0.5) * 0.002 * distance;
+    return [
+      { id: "patient", lat: patientCoords[0], lng: patientCoords[1], label: patientName || "Patient", type: "patient" as const, popup: "Your location" },
+      { id: "ambulance", lat: ambCoords[0] - (ambCoords[0] - patientCoords[0]) * (1 - distance / 4.2) + ambJitter(), lng: ambCoords[1] - (ambCoords[1] - patientCoords[1]) * (1 - distance / 4.2) + ambJitter(), label: "Ambulance", type: "ambulance" as const, popup: `ETA: ${eta} min · ${distance} km` },
+    ];
+  }, [patientCoords, ambCoords, distance, eta, patientName]);
 
   const recognitionRef = useRef<any>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
@@ -342,33 +359,16 @@ export default function EmergencyButton({ patientId, patientName }: EmergencyBut
             {phase === "tracking" && (
               <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
                 <div className="w-full max-w-md space-y-6">
-                  {/* Map visualization */}
-                  <div className="relative w-full h-64 rounded-2xl bg-muted/30 border border-border overflow-hidden">
-                    <div className="absolute inset-0 opacity-20">
-                      {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="absolute border border-border/40 rounded-full" style={{
-                          width: `${(i + 1) * 60}px`, height: `${(i + 1) * 60}px`,
-                          top: '50%', left: '50%', transform: 'translate(-50%, -50%)'
-                        }} />
-                      ))}
-                    </div>
-                    {/* Patient pin */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                      <div className="w-5 h-5 rounded-full bg-primary border-2 border-primary-foreground shadow-lg" />
-                      <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-primary font-bold whitespace-nowrap">You</span>
-                    </div>
-                    {/* Ambulance pin */}
-                    <motion.div
-                      animate={{ x: [40, 20, 10], y: [-50, -30, -15] }}
-                      transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                      className="absolute top-1/3 right-1/3"
-                    >
-                      <div className="w-5 h-5 rounded-full bg-destructive border-2 border-destructive-foreground shadow-lg" />
-                      <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-destructive font-bold whitespace-nowrap flex items-center gap-0.5">
-                        <Navigation className="w-2.5 h-2.5" />Ambulance
-                      </span>
-                    </motion.div>
-                  </div>
+                  {/* Leaflet Map */}
+                  <LeafletMap
+                    markers={trackingMarkers}
+                    center={patientCoords}
+                    zoom={14}
+                    className="h-64"
+                    showRoute
+                    routeFrom={[trackingMarkers[1].lat, trackingMarkers[1].lng]}
+                    routeTo={patientCoords}
+                  />
 
                   {/* Stats */}
                   <div className="flex gap-4 justify-center">
