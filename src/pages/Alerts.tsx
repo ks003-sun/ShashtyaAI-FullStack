@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, Activity, Heart, Bone, Clock, MapPin, Mic, CheckCircle2, XCircle } from "lucide-react";
+import { AlertTriangle, Activity, Heart, Bone, Clock, MapPin, Mic, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
 import { usePatientData } from "@/context/PatientDataContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import SOSExpandedView from "@/components/SOSExpandedView";
 
 const eventTypeConfig = {
   fall: { icon: Bone, label: "Fall", bg: "bg-coral-light", text: "text-coral" },
@@ -23,6 +25,7 @@ const sosTypeColors: Record<string, string> = {
 export default function Alerts() {
   const { patients, sosEvents, acknowledgeSOS } = usePatientData();
   const navigate = useNavigate();
+  const [expandedSOS, setExpandedSOS] = useState<string | null>(null);
 
   const alertPatients = patients
     .filter((p) => p.recentEvents && p.recentEvents.length > 0)
@@ -32,7 +35,6 @@ export default function Alerts() {
     });
 
   const unacknowledgedSOS = sosEvents.filter((e) => !e.acknowledged);
-  const acknowledgedSOS = sosEvents.filter((e) => e.acknowledged);
 
   return (
     <div>
@@ -55,13 +57,16 @@ export default function Alerts() {
             {sosEvents.map((event, i) => {
               const typeColor = sosTypeColors[event.emergencyType] || sosTypeColors.general;
               const time = new Date(event.timestamp);
+              const patient = patients.find(p => p.id === event.patientId);
+              const isExpanded = expandedSOS === event.id;
+
               return (
                 <motion.div
                   key={event.id}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className={`card-healthcare p-4 border-l-4 ${event.acknowledged ? "border-l-muted-foreground/30" : "border-l-red-600"}`}
+                  className={`card-healthcare p-4 border-l-4 ${event.acknowledged ? "border-l-green-500" : "border-l-red-600"}`}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -88,16 +93,30 @@ export default function Alerts() {
                         <p className="text-[11px] text-muted-foreground mt-1 italic truncate">"{event.transcript}"</p>
                       )}
                     </div>
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 flex flex-col items-end gap-2">
                       {event.acknowledged ? (
-                        <span className="flex items-center gap-1 text-xs text-green-600">
-                          <CheckCircle2 className="w-4 h-4" /> Acknowledged
-                        </span>
+                        <>
+                          <span className="flex items-center gap-1 text-xs text-green-600">
+                            <CheckCircle2 className="w-4 h-4" /> Acknowledged
+                          </span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setExpandedSOS(isExpanded ? null : event.id)}
+                            className="text-[10px] h-7 px-2"
+                          >
+                            {isExpanded ? <ChevronUp className="w-3 h-3 mr-1" /> : <ChevronDown className="w-3 h-3 mr-1" />}
+                            {isExpanded ? "Collapse" : "View Response"}
+                          </Button>
+                        </>
                       ) : (
                         <Button
                           size="sm"
                           variant="destructive"
-                          onClick={() => acknowledgeSOS(event.id)}
+                          onClick={() => {
+                            acknowledgeSOS(event.id);
+                            setExpandedSOS(event.id);
+                          }}
                           className="text-xs"
                         >
                           Acknowledge
@@ -105,6 +124,11 @@ export default function Alerts() {
                       )}
                     </div>
                   </div>
+
+                  {/* Expanded view with map, hospitals, vitals */}
+                  {isExpanded && event.acknowledged && patient && (
+                    <SOSExpandedView event={event} patient={patient} />
+                  )}
                 </motion.div>
               );
             })}
