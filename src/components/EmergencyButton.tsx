@@ -359,33 +359,16 @@ export default function EmergencyButton({ patientId, patientName, patientLocatio
             {phase === "tracking" && (
               <div className="flex-1 flex flex-col items-center justify-center px-8 text-center">
                 <div className="w-full max-w-md space-y-6">
-                  {/* Map visualization */}
-                  <div className="relative w-full h-64 rounded-2xl bg-muted/30 border border-border overflow-hidden">
-                    <div className="absolute inset-0 opacity-20">
-                      {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="absolute border border-border/40 rounded-full" style={{
-                          width: `${(i + 1) * 60}px`, height: `${(i + 1) * 60}px`,
-                          top: '50%', left: '50%', transform: 'translate(-50%, -50%)'
-                        }} />
-                      ))}
-                    </div>
-                    {/* Patient pin */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                      <div className="w-5 h-5 rounded-full bg-primary border-2 border-primary-foreground shadow-lg" />
-                      <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-primary font-bold whitespace-nowrap">You</span>
-                    </div>
-                    {/* Ambulance pin */}
-                    <motion.div
-                      animate={{ x: [40, 20, 10], y: [-50, -30, -15] }}
-                      transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                      className="absolute top-1/3 right-1/3"
-                    >
-                      <div className="w-5 h-5 rounded-full bg-destructive border-2 border-destructive-foreground shadow-lg" />
-                      <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[9px] text-destructive font-bold whitespace-nowrap flex items-center gap-0.5">
-                        <Navigation className="w-2.5 h-2.5" />Ambulance
-                      </span>
-                    </motion.div>
-                  </div>
+                  {/* Leaflet Map */}
+                  <LeafletMap
+                    markers={trackingMarkers}
+                    center={patientCoords}
+                    zoom={14}
+                    className="h-64"
+                    showRoute
+                    routeFrom={[trackingMarkers[1].lat, trackingMarkers[1].lng]}
+                    routeTo={patientCoords}
+                  />
 
                   {/* Stats */}
                   <div className="flex gap-4 justify-center">
