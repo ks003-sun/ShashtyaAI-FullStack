@@ -15,6 +15,7 @@ import PatientsPage from "@/pages/PatientsPage";
 import InsightsPage from "@/pages/InsightsPage";
 import FamilyHealthPage from "@/pages/FamilyHealthPage";
 import MedicationsPage from "@/pages/MedicationsPage";
+import GPSTrackingPage from "@/pages/GPSTrackingPage";
 import Alerts from "@/pages/Alerts";
 import Settings from "@/pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -40,6 +41,7 @@ const App = () => (
               <Route path="/insights" element={<InsightsPage />} />
               <Route path="/family" element={<FamilyHealthPage />} />
               <Route path="/medications" element={<MedicationsPage />} />
+              <Route path="/tracking" element={<GPSTrackingPage />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/settings" element={<Settings />} />
             </Route>

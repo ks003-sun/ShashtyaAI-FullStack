@@ -5,20 +5,21 @@ import {
   Users,
   Pill,
   Brain,
-  HeartPulse,
+  MapPin,
   Network,
   Settings,
   Bell,
+  Calendar,
 } from "lucide-react";
 import ShastyaLogo from "@/components/ShastyaLogo";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Users, label: "Patients", path: "/patients" },
+  { icon: MapPin, label: "GPS & Follow-ups", path: "/tracking" },
   { icon: Pill, label: "Medications", path: "/medications" },
   { icon: Brain, label: "AI Insights", path: "/insights" },
   { icon: Network, label: "Family Health", path: "/family" },
-  { icon: HeartPulse, label: "Vitals Monitor", path: "/vitals" },
 ];
 
 const bottomItems = [
