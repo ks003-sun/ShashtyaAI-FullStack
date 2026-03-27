@@ -135,6 +135,7 @@ export default function EmergencyButton({ patientId, patientName, patientLocatio
   const recognitionRef = useRef<any>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
+  const stopRecognition = useCallback(() => {
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
       recognitionRef.current = null;
