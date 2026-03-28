@@ -1,8 +1,8 @@
-# Shastya AI Backend
+# Shastya AI 
 
 ## Overview
 
-Shastya AI is an intelligent healthcare backend system designed to monitor patient vitals, analyze trends, and generate actionable clinical insights in real time. The system integrates advanced machine learning models with a structured data pipeline to support proactive and preventive healthcare.
+Shastya AI is an intelligent healthcare system designed to monitor patient vitals, analyze trends, and generate actionable clinical insights in real time. The system integrates advanced machine learning models with a structured data pipeline to support proactive and preventive healthcare.
 
 ---
 
