@@ -154,35 +154,64 @@ export default function EmergencyButton({ patientId, patientName, patientLocatio
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "hi-IN"; // Supports Indic scripts well
+    // Language codes for all 6 Indian languages + English
+    const LANG_CODES = ["en-IN", "hi-IN", "te-IN", "ta-IN", "ml-IN", "kn-IN", "bn-IN"];
+    let langIndex = 0;
 
-    recognition.onresult = (event: any) => {
-      let text = "";
-      for (let i = 0; i < event.results.length; i++) {
-        text += event.results[i][0].transcript;
-      }
-      setTranscript(text);
+    const createRecognition = (langCode: string) => {
+      const rec = new SpeechRecognition();
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.lang = langCode;
 
-      const lower = text.toLowerCase();
-      const found = EMERGENCY_KEYWORDS.find(kw => lower.includes(kw.keyword.toLowerCase()));
-      if (found) {
-        setDetected(found.keyword);
-        setDetectedLang(found.lang);
-        setEmergencyInfo({ type: found.type, issue: found.issue });
-        recognition.stop();
-        setPhase("confirm");
-      }
+      rec.onresult = (event: any) => {
+        let text = "";
+        for (let i = 0; i < event.results.length; i++) {
+          text += event.results[i][0].transcript;
+        }
+        setTranscript(text);
+
+        // Check against all keywords (native script + transliterated)
+        const lower = text.toLowerCase();
+        const found = EMERGENCY_KEYWORDS.find(kw => lower.includes(kw.keyword.toLowerCase()));
+        if (found) {
+          setDetected(found.keyword);
+          setDetectedLang(found.lang);
+          setEmergencyInfo({ type: found.type, issue: found.issue });
+          rec.stop();
+          setPhase("confirm");
+        }
+      };
+
+      rec.onend = () => {
+        // If still listening and no keyword detected, cycle to next language
+        if (recognitionRef.current === rec && phase === "listening") {
+          langIndex = (langIndex + 1) % LANG_CODES.length;
+          try {
+            rec.lang = LANG_CODES[langIndex];
+            rec.start();
+          } catch {}
+        }
+      };
+
+      rec.onerror = (e: any) => {
+        if (e.error !== "aborted" && e.error !== "no-speech") {
+          // On error, try next language
+          langIndex = (langIndex + 1) % LANG_CODES.length;
+          try {
+            const retry = createRecognition(LANG_CODES[langIndex]);
+            retry.start();
+            recognitionRef.current = retry;
+          } catch {
+            setTranscript(`Listening error: ${e.error}. Tap mic to retry.`);
+          }
+        }
+      };
+
+      return rec;
     };
 
-    recognition.onerror = (e: any) => {
-      if (e.error !== "aborted") {
-        setTranscript(`Listening error: ${e.error}. Tap mic to retry.`);
-      }
-    };
-
+    const recognition = createRecognition(LANG_CODES[0]);
     recognition.start();
     recognitionRef.current = recognition;
   }, []);

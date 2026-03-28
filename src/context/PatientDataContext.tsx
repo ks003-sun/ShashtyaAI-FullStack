@@ -239,12 +239,37 @@ function generateInitialFollowUps(patients: Patient[]): FollowUp[] {
   }));
 }
 
+function generateInitialDocuments(): PatientDocument[] {
+  return [
+    { id: "doc-1", patientId: "1", name: "Complete Blood Picture (CBC)", type: "Lab Report", size: "1.2 MB", uploadedBy: "Anita Sharma (Caregiver)", date: "2024-04-03" },
+    { id: "doc-2", patientId: "1", name: "HbA1c Panel — March 2024", type: "Lab Report", size: "0.8 MB", uploadedBy: "Anita Sharma (Caregiver)", date: "2024-03-28" },
+    { id: "doc-3", patientId: "2", name: "Echocardiogram Report", type: "Cardiac Imaging", size: "4.5 MB", uploadedBy: "Suresh Rao (Caregiver)", date: "2024-04-01" },
+    { id: "doc-4", patientId: "2", name: "12-Lead ECG Recording", type: "Cardiac Test", size: "2.1 MB", uploadedBy: "Suresh Rao (Caregiver)", date: "2024-04-04" },
+    { id: "doc-5", patientId: "3", name: "Brain MRI — Contrast Enhanced", type: "MRI Scan", size: "18.3 MB", uploadedBy: "Priya Iyer (Caregiver)", date: "2024-03-25" },
+    { id: "doc-6", patientId: "3", name: "CT Scan — Head (Non-Contrast)", type: "CT Scan", size: "12.7 MB", uploadedBy: "Priya Iyer (Caregiver)", date: "2024-04-02" },
+    { id: "doc-7", patientId: "5", name: "Coronary CT Angiography", type: "CT Scan", size: "22.4 MB", uploadedBy: "Rekha Menon (Caregiver)", date: "2024-03-30" },
+    { id: "doc-8", patientId: "5", name: "Stress Echocardiogram", type: "Cardiac Imaging", size: "5.8 MB", uploadedBy: "Rekha Menon (Caregiver)", date: "2024-04-03" },
+    { id: "doc-9", patientId: "7", name: "High-Resolution CT Chest (HRCT)", type: "CT Scan", size: "15.6 MB", uploadedBy: "Lakshmi Das (Caregiver)", date: "2024-04-01" },
+    { id: "doc-10", patientId: "7", name: "Pulmonary Function Test (PFT)", type: "Lab Report", size: "1.4 MB", uploadedBy: "Lakshmi Das (Caregiver)", date: "2024-03-29" },
+    { id: "doc-11", patientId: "9", name: "Brain MRI — Volumetric Analysis", type: "MRI Scan", size: "24.1 MB", uploadedBy: "Meera Banerjee (Caregiver)", date: "2024-03-20" },
+    { id: "doc-12", patientId: "9", name: "Complete Blood Picture with Differential", type: "Lab Report", size: "1.1 MB", uploadedBy: "Meera Banerjee (Caregiver)", date: "2024-04-05" },
+    { id: "doc-13", patientId: "4", name: "Nerve Conduction Study (NCS)", type: "Lab Report", size: "2.3 MB", uploadedBy: "Deepak Kumar (Caregiver)", date: "2024-04-02" },
+    { id: "doc-14", patientId: "6", name: "DaTscan — Dopamine Transporter SPECT", type: "Nuclear Imaging", size: "8.9 MB", uploadedBy: "Kavitha Reddy (Caregiver)", date: "2024-03-27" },
+    { id: "doc-15", patientId: "13", name: "CT Pulmonary Angiography", type: "CT Scan", size: "16.2 MB", uploadedBy: "Manpreet Kaur Gill (Caregiver)", date: "2024-04-01" },
+    { id: "doc-16", patientId: "13", name: "Arterial Blood Gas (ABG) Report", type: "Lab Report", size: "0.6 MB", uploadedBy: "Manpreet Kaur Gill (Caregiver)", date: "2024-04-04" },
+    { id: "doc-17", patientId: "16", name: "2D Echocardiogram with Doppler", type: "Cardiac Imaging", size: "6.2 MB", uploadedBy: "Anil Gupta (Caregiver)", date: "2024-04-02" },
+    { id: "doc-18", patientId: "16", name: "Complete Blood Picture — Anemia Panel", type: "Lab Report", size: "1.3 MB", uploadedBy: "Anil Gupta (Caregiver)", date: "2024-04-04" },
+    { id: "doc-19", patientId: "14", name: "Fundoscopy & OCT Report", type: "Ophthalmology", size: "3.4 MB", uploadedBy: "Rajiv Mishra (Caregiver)", date: "2024-04-01" },
+    { id: "doc-20", patientId: "15", name: "24-Hour Holter Monitor Report", type: "Cardiac Test", size: "3.7 MB", uploadedBy: "Deepa Nair (Caregiver)", date: "2024-04-03" },
+  ];
+}
+
 export function PatientDataProvider({ children }: { children: ReactNode }) {
   const [patients] = useState<Patient[]>(initialPatients);
   const [caregiverLogs, setCaregiverLogs] = useState<CaregiverLog[]>(generateInitialLogs);
   const [adherenceRecords, setAdherenceRecords] = useState<AdherenceRecord[]>(() => generateInitialAdherence(initialPatients));
   const [careSuggestions, setCareSuggestions] = useState<CareSuggestion[]>(() => generateCareSuggestions(initialPatients));
-  const [patientDocuments, setPatientDocuments] = useState<PatientDocument[]>([]);
+  const [patientDocuments, setPatientDocuments] = useState<PatientDocument[]>(() => generateInitialDocuments());
   const [draftPrescriptions, setDraftPrescriptions] = useState<DraftPrescription[]>([]);
   const [sosEvents, setSOSEvents] = useState<SOSEvent[]>([]);
   const [followUps, setFollowUps] = useState<FollowUp[]>(() => generateInitialFollowUps(initialPatients));
