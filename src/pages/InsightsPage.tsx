@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, TrendingUp, AlertTriangle, CheckCircle, Info, AlertCircle, Search, Sparkles } from "lucide-react";
+import { Brain, TrendingUp, AlertTriangle, CheckCircle, Info, AlertCircle, Search, Sparkles, FileText, FlaskConical } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { usePatientData } from "@/context/PatientDataContext";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -12,11 +12,30 @@ const typeConfig = {
   positive: { icon: CheckCircle, bg: "bg-sage-light", text: "text-sage", label: "Positive" },
 };
 
+// Report-derived insight IDs
+const REPORT_INSIGHT_IDS = new Set(["i47", "i48", "i49", "i50", "i51", "i52", "i53", "i54", "i55", "i56", "i57"]);
+
+// Map insight IDs to their source documents
+const INSIGHT_SOURCE_DOCS: Record<string, string> = {
+  i47: "Complete Blood Picture (CBC)",
+  i48: "HbA1c Panel — March 2024",
+  i49: "Echocardiogram Report",
+  i50: "12-Lead ECG Recording",
+  i51: "Brain MRI — Contrast Enhanced / CT Scan Head",
+  i52: "Coronary CT Angiography",
+  i53: "Stress Echocardiogram",
+  i54: "High-Resolution CT Chest (HRCT)",
+  i55: "Pulmonary Function Test (PFT)",
+  i56: "Brain MRI — Volumetric Analysis",
+  i57: "Complete Blood Picture with Differential",
+};
+
 export default function InsightsPage() {
-  const { patients, careSuggestions, toggleSuggestion } = usePatientData();
+  const { patients, patientDocuments, careSuggestions, toggleSuggestion } = usePatientData();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "critical" | "warning" | "info" | "positive">("all");
   const [selectedPatient, setSelectedPatient] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"all" | "vitals" | "reports">("all");
 
   const allInsights = patients.flatMap((p) =>
     p.insights.map((ins) => ({
@@ -24,6 +43,8 @@ export default function InsightsPage() {
       patientId: p.id,
       patientName: p.name,
       patientAvatar: p.avatar,
+      isReportBased: REPORT_INSIGHT_IDS.has(ins.id),
+      sourceDoc: INSIGHT_SOURCE_DOCS[ins.id] || null,
     }))
   );
 
@@ -32,20 +53,22 @@ export default function InsightsPage() {
       const matchSearch = ins.title.toLowerCase().includes(search.toLowerCase()) || ins.description.toLowerCase().includes(search.toLowerCase()) || ins.patientName.toLowerCase().includes(search.toLowerCase());
       const matchType = typeFilter === "all" || ins.type === typeFilter;
       const matchPatient = selectedPatient === "all" || ins.patientId === selectedPatient;
-      return matchSearch && matchType && matchPatient;
+      const matchView = viewMode === "all" || (viewMode === "reports" ? ins.isReportBased : !ins.isReportBased);
+      return matchSearch && matchType && matchPatient && matchView;
     })
     .sort((a, b) => {
       const order = { critical: 0, warning: 1, info: 2, positive: 3 };
       return order[a.type] - order[b.type];
     });
 
+  const reportInsightCount = allInsights.filter(i => i.isReportBased).length;
   const relevantSuggestions = selectedPatient !== "all" 
     ? careSuggestions.filter(s => s.patientId === selectedPatient)
     : careSuggestions.slice(0, 6);
 
   return (
     <div>
-      <DashboardHeader title="AI Insights" subtitle="Patient-specific analytical observations and care suggestions" />
+      <DashboardHeader title="AI Insights" subtitle="Patient-specific analytical observations, report-derived findings, and care suggestions" />
 
       <div className="flex flex-wrap gap-3 mb-6">
         <div className="relative flex-1 min-w-[200px]">
@@ -62,6 +85,21 @@ export default function InsightsPage() {
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
+        <div className="flex gap-1.5">
+          {(["all", "vitals", "reports"] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setViewMode(v)}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                viewMode === v ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {v === "reports" && <FileText className="w-3 h-3" />}
+              {v === "vitals" && <FlaskConical className="w-3 h-3" />}
+              {v === "all" ? "All Sources" : v === "vitals" ? "Vitals-Based" : `Report-Based (${reportInsightCount})`}
+            </button>
+          ))}
+        </div>
         <div className="flex gap-1.5">
           {(["all", "critical", "warning", "info", "positive"] as const).map((f) => (
             <button
@@ -103,10 +141,21 @@ export default function InsightsPage() {
                       <span className={`text-[10px] font-bold ${config.text}`}>{insight.confidence}% conf.</span>
                     </div>
                     <p className="text-xs text-muted-foreground leading-relaxed">{insight.description}</p>
-                    <div className="flex items-center gap-3 mt-2 text-[10px] text-muted-foreground">
+                    {insight.recommendation && (
+                      <div className="mt-2 p-2 rounded-md bg-accent/50 border border-border/30">
+                        <p className="text-[11px] text-foreground"><span className="font-semibold text-primary">Recommendation:</span> {insight.recommendation}</p>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3 mt-2 text-[10px] text-muted-foreground flex-wrap">
                       <span className="px-1.5 py-0.5 rounded bg-accent text-accent-foreground font-medium">{insight.patientName}</span>
                       <span>{insight.date}</span>
                       <span className={`${config.text} font-medium`}>{config.label}</span>
+                      {insight.isReportBased && insight.sourceDoc && (
+                        <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium flex items-center gap-1">
+                          <FileText className="w-3 h-3" />
+                          {insight.sourceDoc}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -116,6 +165,29 @@ export default function InsightsPage() {
         </div>
 
         <div className="space-y-4">
+          {/* Uploaded Reports Summary */}
+          <div className="card-healthcare p-4">
+            <h3 className="font-display text-sm text-foreground flex items-center gap-2 mb-3">
+              <FileText className="w-4 h-4 text-primary" />
+              Uploaded Reports ({patientDocuments.length})
+            </h3>
+            <div className="space-y-2 max-h-[200px] overflow-y-auto">
+              {patientDocuments.slice(0, 8).map((doc) => {
+                const patient = patients.find(p => p.id === doc.patientId);
+                return (
+                  <div key={doc.id} className="flex items-center gap-2 text-[11px] p-1.5 rounded-md bg-accent/30">
+                    <FileText className="w-3 h-3 text-primary flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate">{doc.name}</p>
+                      <p className="text-muted-foreground">{patient?.name} · {doc.date}</p>
+                    </div>
+                    <span className="text-muted-foreground flex-shrink-0">{doc.size}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           <h3 className="font-display text-lg text-foreground flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-teal" />
             Daily Care Suggestions
