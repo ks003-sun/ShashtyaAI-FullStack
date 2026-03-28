@@ -244,7 +244,7 @@ export function PatientDataProvider({ children }: { children: ReactNode }) {
   const [caregiverLogs, setCaregiverLogs] = useState<CaregiverLog[]>(generateInitialLogs);
   const [adherenceRecords, setAdherenceRecords] = useState<AdherenceRecord[]>(() => generateInitialAdherence(initialPatients));
   const [careSuggestions, setCareSuggestions] = useState<CareSuggestion[]>(() => generateCareSuggestions(initialPatients));
-  const [patientDocuments, setPatientDocuments] = useState<PatientDocument[]>([]);
+  const [patientDocuments, setPatientDocuments] = useState<PatientDocument[]>(() => generateInitialDocuments());
   const [draftPrescriptions, setDraftPrescriptions] = useState<DraftPrescription[]>([]);
   const [sosEvents, setSOSEvents] = useState<SOSEvent[]>([]);
   const [followUps, setFollowUps] = useState<FollowUp[]>(() => generateInitialFollowUps(initialPatients));
