@@ -5,15 +5,15 @@ import { usePatientData } from "@/context/PatientDataContext";
 
 const doctorProfile = {
   name: "Dr. Rithika Singh",
-  email: "rithika.singh@shastyaai.health",
+  email: "rithika.singh@medhahealth.in",
   phone: "+91 98765 43210",
   dob: "1982-07-15",
   gender: "Female",
-  hospital: "AIIMS Geriatric Care Centre",
-  department: "Geriatric Medicine & Chronic Disease Management",
+  hospital: "AIIMS Multi-Specialty Care Centre",
+  department: "Internal Medicine & Chronic Disease Management",
   location: "New Delhi, India",
   licenseNo: "MCI-2008-47832",
-  specialization: "Geriatric Internal Medicine, Chronic Disease AI Analytics",
+  specialization: "Internal Medicine, Post-Surgical Recovery, Chronic Disease AI Analytics",
   experience: "18 years",
 };
 
