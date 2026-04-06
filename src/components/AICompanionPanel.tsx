@@ -85,7 +85,7 @@ export default function AICompanionPanel() {
         </AnimatePresence>
         <div className="flex items-center gap-2 mt-3">
           <div className="flex-1 h-8 rounded-lg bg-card/60 border border-border/30 px-3 flex items-center text-[11px] text-muted-foreground">
-            Ask ShastyaAI anything...
+            Ask MedhaHealth anything...
           </div>
           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
             <Send className="w-3.5 h-3.5 text-primary" />

@@ -132,14 +132,14 @@ export default function SplashPage() {
               <motion.div className="space-y-8" initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                 <div className="space-y-5">
                   <motion.div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary/8 border border-primary/15 text-[10px] text-primary font-semibold uppercase tracking-wider">
-                    <Cpu className="w-3 h-3" />AI-Powered Geriatric Care Platform
+                    <Cpu className="w-3 h-3" />AI-Powered Healthcare Platform
                   </motion.div>
                   <h1 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] text-foreground leading-[1.1] tracking-tight">
                     A Unified Intelligence Agent for{" "}
                     <span className="text-primary">Lifelong Care</span>
                   </h1>
                   <p className="text-muted-foreground text-base max-w-lg leading-relaxed">
-                    Predict chronic disease progression. Monitor medication conflicts. Connect family health histories through Universal Health ID.
+                    All-age care management. Predict chronic disease progression. Track surgical recovery. Monitor medications across the continuum of care.
                   </p>
                 </div>
                 <div className="flex items-center gap-4">

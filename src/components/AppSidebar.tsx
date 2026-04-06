@@ -20,6 +20,7 @@ const navItems = [
   { icon: Pill, label: "Medications", path: "/medications" },
   { icon: Brain, label: "AI Insights", path: "/insights" },
   { icon: Network, label: "Family Health", path: "/family" },
+  { icon: Calendar, label: "Post-Care Continuum", path: "/post-care" },
 ];
 
 const bottomItems = [
@@ -84,7 +85,7 @@ export default function AppSidebar() {
         {/* Doctor Info */}
         <div className="mt-4 p-3 rounded-lg bg-sidebar-accent/50">
           <p className="text-xs font-medium text-sidebar-foreground">Dr. Rithika Singh</p>
-          <p className="text-[10px] text-muted-foreground">Geriatric Medicine</p>
+          <p className="text-[10px] text-muted-foreground">Internal Medicine</p>
         </div>
       </div>
     </aside>

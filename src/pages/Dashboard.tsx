@@ -42,7 +42,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      <DashboardHeader title="Dashboard" subtitle="Geriatric Care Management Overview" />
+      <DashboardHeader title="Dashboard" subtitle="Intelligent Care Management Overview" />
 
       <div className="flex gap-6">
         {/* Main content area */}
