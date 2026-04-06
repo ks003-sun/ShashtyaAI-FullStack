@@ -14,6 +14,11 @@ export const cityCoordinates: Record<string, [number, number]> = {
   "Mumbai, Maharashtra": [19.0760, 72.8777],
   "Delhi": [28.7041, 77.1025],
   "Lucknow, Uttar Pradesh": [26.8467, 80.9462],
+  "Ludhiana, Punjab": [30.9010, 75.8573],
+  "Patna, Bihar": [25.6093, 85.1376],
+  "Kottayam, Kerala": [9.5916, 76.5222],
+  "Visakhapatnam, Andhra Pradesh": [17.6868, 83.2185],
+  "Bhopal, Madhya Pradesh": [23.2599, 77.4126],
 };
 
 // Add slight random offset to simulate real patient GPS
