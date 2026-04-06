@@ -20,6 +20,7 @@ const navItems = [
   { icon: Pill, label: "Medications", path: "/medications" },
   { icon: Brain, label: "AI Insights", path: "/insights" },
   { icon: Network, label: "Family Health", path: "/family" },
+  { icon: Calendar, label: "Post-Care Continuum", path: "/post-care" },
 ];
 
 const bottomItems = [
