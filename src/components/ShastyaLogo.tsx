@@ -1,17 +1,25 @@
-import shastyaLogo from "@/assets/shastyaai-logo.png";
+import medhaLogo from "@/assets/medhaai-logo.jpeg";
 
 interface MedhaLogoProps {
   className?: string;
   height?: number;
+  showSubtitle?: boolean;
 }
 
-export default function ShastyaLogo({ className = "", height = 48 }: MedhaLogoProps) {
+export default function ShastyaLogo({ className = "", height = 48, showSubtitle = false }: MedhaLogoProps) {
   return (
-    <img
-      src={shastyaLogo}
-      alt="MedhaHealth"
-      style={{ height: Math.max(32, height * 2), width: "auto" }}
-      className={`object-contain ${className}`}
-    />
+    <div className={`flex flex-col ${className}`}>
+      <img
+        src={medhaLogo}
+        alt="MedhaAI"
+        style={{ height: Math.max(32, height), width: "auto" }}
+        className="object-contain"
+      />
+      {showSubtitle && (
+        <p className="text-[10px] text-muted-foreground tracking-wide mt-1 font-medium">
+          A Round-the-Clock Patient Care Coordinator
+        </p>
+      )}
+    </div>
   );
 }

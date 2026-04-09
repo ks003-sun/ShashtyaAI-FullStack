@@ -25,14 +25,14 @@ export default function StatCard({ icon: Icon, label, value, change, changeType 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.3 }}
-      className="stat-card"
+      className="glass-card p-4 space-y-2 hover:glow-primary transition-shadow duration-300"
     >
       <div className="flex items-center justify-between">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colorMap[color]}`}>
-          <Icon className="w-5 h-5" />
+        <div className={`w-9 h-9 rounded-md flex items-center justify-center ${colorMap[color]}`}>
+          <Icon className="w-4 h-4" />
         </div>
         {change && (
-          <span className={`text-xs font-medium ${
+          <span className={`text-[11px] font-semibold ${
             changeType === "positive" ? "text-sage" : changeType === "negative" ? "text-coral" : "text-muted-foreground"
           }`}>
             {change}
@@ -40,8 +40,8 @@ export default function StatCard({ icon: Icon, label, value, change, changeType 
         )}
       </div>
       <div>
-        <p className="text-2xl font-bold text-foreground font-display">{value}</p>
-        <p className="text-xs text-muted-foreground">{label}</p>
+        <p className="text-xl font-bold text-foreground font-display">{value}</p>
+        <p className="text-[11px] text-muted-foreground">{label}</p>
       </div>
     </motion.div>
   );
