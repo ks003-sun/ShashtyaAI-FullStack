@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity, TrendingUp, Sparkles, Dna, Shield, Cpu, BarChart3, Microscope } from "lucide-react";
@@ -6,7 +6,7 @@ import ShastyaLogo from "@/components/ShastyaLogo";
 
 function AnimatedRiskScore() {
   const [score, setScore] = useState(42);
-  useEffect(() => {
+  useState(() => {
     const interval = setInterval(() => {
       setScore((s) => {
         const next = s + Math.floor(Math.random() * 7) - 3;
@@ -14,17 +14,17 @@ function AnimatedRiskScore() {
       });
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  });
 
   const color = score > 65 ? "text-coral" : score > 45 ? "text-amber" : "text-sage";
 
   return (
     <motion.div
-      className="border border-border/30 bg-card/60 backdrop-blur-md rounded-xl p-4 space-y-2"
+      className="border border-border/30 bg-card/60 backdrop-blur-xl rounded-md p-4 space-y-2"
       whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+      <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
         <Activity className="w-3 h-3 text-teal" />
         Live Risk Index
       </div>
@@ -44,8 +44,8 @@ function PredictiveGraph() {
   const predictedPoints = "270,25 300,20 330,22 360,15";
 
   return (
-    <motion.div className="border border-border/30 bg-card/60 backdrop-blur-md rounded-xl p-4" whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }} transition={{ type: "spring", stiffness: 300 }}>
-      <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-2">
+    <motion.div className="border border-border/30 bg-card/60 backdrop-blur-xl rounded-md p-4" whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }} transition={{ type: "spring", stiffness: 300 }}>
+      <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">
         <TrendingUp className="w-3 h-3 text-primary" />HbA1c Predictive Trend
       </div>
       <svg viewBox="0 0 380 80" className="w-full h-14">
@@ -55,7 +55,7 @@ function PredictiveGraph() {
       </svg>
       <div className="flex justify-between text-[9px] text-muted-foreground mt-1">
         <span>6 months ago</span>
-        <span className="text-primary font-medium">ML Predicted →</span>
+        <span className="text-primary font-semibold">ML Predicted →</span>
       </div>
     </motion.div>
   );
@@ -64,11 +64,11 @@ function PredictiveGraph() {
 function DataModule({ icon: Icon, label, value, sub }: { icon: React.ElementType; label: string; value: string; sub: string }) {
   return (
     <motion.div
-      className="border border-border/30 bg-card/60 backdrop-blur-md rounded-xl p-4"
+      className="border border-border/30 bg-card/60 backdrop-blur-xl rounded-md p-4"
       whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }}
       transition={{ type: "spring", stiffness: 300 }}
     >
-      <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-2">
+      <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">
         <Icon className="w-3 h-3 text-primary" />{label}
       </div>
       <p className="text-2xl font-bold font-display text-foreground">{value}</p>
@@ -79,7 +79,7 @@ function DataModule({ icon: Icon, label, value, sub }: { icon: React.ElementType
 
 function GridLines() {
   return (
-    <svg className="absolute inset-0 w-full h-full opacity-[0.04] pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+    <svg className="absolute inset-0 w-full h-full opacity-[0.03] pointer-events-none" xmlns="http://www.w3.org/2000/svg">
       {Array.from({ length: 20 }).map((_, i) => (
         <line key={`h${i}`} x1="0" y1={i * 60} x2="100%" y2={i * 60} stroke="hsl(var(--primary))" strokeWidth="0.5" />
       ))}
@@ -101,7 +101,7 @@ export default function SplashPage() {
 
   return (
     <AnimatePresence>
-      <motion.div className="relative min-h-screen overflow-hidden bg-background" initial={{ opacity: 1 }} animate={transitioning ? { opacity: 0, scale: 1.02 } : { opacity: 1 }} transition={{ duration: 1 }}>
+      <motion.div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-background to-teal-light/30" initial={{ opacity: 1 }} animate={transitioning ? { opacity: 0, scale: 1.02 } : { opacity: 1 }} transition={{ duration: 1 }}>
         <GridLines />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/4 blur-[150px] pointer-events-none" />
 
@@ -110,7 +110,7 @@ export default function SplashPage() {
             <motion.div className="fixed inset-0 z-50 flex items-center justify-center bg-background" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }}>
               <motion.div className="flex flex-col items-center gap-4">
                 <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, ease: "linear", repeat: Infinity }}>
-                  <ShastyaLogo height={128} />
+                  <ShastyaLogo height={96} />
                 </motion.div>
                 <motion.p className="text-sm text-muted-foreground" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 1.5, repeat: Infinity }}>Initializing AI Systems...</motion.p>
               </motion.div>
@@ -120,7 +120,7 @@ export default function SplashPage() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-10 min-h-screen flex flex-col">
           <motion.header className="flex items-center justify-between" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <ShastyaLogo height={192} />
+            <ShastyaLogo height={80} />
             <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider">
               <Dna className="w-3.5 h-3.5 text-primary" />
               <span>Universal Health ID · Probabilistic Engine</span>
@@ -139,11 +139,11 @@ export default function SplashPage() {
                     <span className="text-primary">Lifelong Care</span>
                   </h1>
                   <p className="text-muted-foreground text-base max-w-lg leading-relaxed">
-                    All-age care management. Predict chronic disease progression. Track surgical recovery. Monitor medications across the continuum of care.
+                    A Round-the-Clock Patient Care Coordinator. Predict chronic disease progression. Track surgical recovery. Monitor medications across the continuum of care.
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <motion.button onClick={handleEnter} className="group relative px-8 py-3.5 rounded-lg bg-primary text-primary-foreground font-semibold text-sm tracking-wide overflow-hidden" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <motion.button onClick={handleEnter} className="group relative px-8 py-3.5 rounded-md bg-primary text-primary-foreground font-semibold text-sm tracking-wide overflow-hidden glow-primary" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                     <span className="relative z-10 flex items-center gap-2">Enter Platform<motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>→</motion.span></span>
                   </motion.button>
                   <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">

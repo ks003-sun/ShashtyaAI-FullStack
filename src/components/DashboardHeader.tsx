@@ -9,8 +9,8 @@ export default function DashboardHeader({ title, subtitle }: { title: string; su
       className="flex items-center justify-between mb-8"
     >
       <div>
-        <h1 className="font-display text-3xl text-foreground">{title}</h1>
-        {subtitle && <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>}
+        <h1 className="font-display text-2xl text-foreground tracking-tight">{title}</h1>
+        {subtitle && <p className="text-[13px] text-muted-foreground mt-0.5">{subtitle}</p>}
       </div>
       <div className="flex items-center gap-3">
         <div className="relative">
@@ -18,10 +18,10 @@ export default function DashboardHeader({ title, subtitle }: { title: string; su
           <input
             type="text"
             placeholder="Search patients, conditions..."
-            className="pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 w-72"
+            className="pl-9 pr-4 py-2 rounded-md glass-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 w-72"
           />
         </div>
-        <button className="relative p-2.5 rounded-xl bg-card border border-border hover:bg-accent transition-colors">
+        <button className="relative p-2 rounded-md glass-card hover:bg-primary/10 transition-colors">
           <Bell className="w-4 h-4 text-muted-foreground" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-coral" />
         </button>

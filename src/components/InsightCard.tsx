@@ -3,10 +3,10 @@ import { AlertTriangle, AlertCircle, Info, CheckCircle, Stethoscope } from "luci
 import { HealthInsight } from "@/data/mockPatients";
 
 const typeConfig = {
-  critical: { icon: AlertTriangle, bg: "bg-coral-light", text: "text-coral", border: "border-coral/20" },
-  warning: { icon: AlertCircle, bg: "bg-amber-light", text: "text-amber", border: "border-amber/20" },
-  info: { icon: Info, bg: "bg-teal-light", text: "text-teal", border: "border-teal/20" },
-  positive: { icon: CheckCircle, bg: "bg-sage-light", text: "text-sage", border: "border-sage/20" },
+  critical: { icon: AlertTriangle, bg: "bg-coral-light", text: "text-coral", border: "border-l-coral" },
+  warning: { icon: AlertCircle, bg: "bg-amber-light", text: "text-amber", border: "border-l-amber" },
+  info: { icon: Info, bg: "bg-teal-light", text: "text-teal", border: "border-l-teal" },
+  positive: { icon: CheckCircle, bg: "bg-sage-light", text: "text-sage", border: "border-l-sage" },
 };
 
 export default function InsightCard({ insight, index }: { insight: HealthInsight; index: number }) {
@@ -17,21 +17,21 @@ export default function InsightCard({ insight, index }: { insight: HealthInsight
       initial={{ opacity: 0, x: -12 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1, duration: 0.3 }}
-      className={`card-healthcare p-4 border-l-4 ${config.border}`}
+      className={`glass-card p-4 border-l-[3px] ${config.border}`}
     >
       <div className="flex items-start gap-3">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${config.bg}`}>
-          <config.icon className={`w-4 h-4 ${config.text}`} />
+        <div className={`w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 ${config.bg}`}>
+          <config.icon className={`w-3.5 h-3.5 ${config.text}`} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-1">
-            <h4 className="text-sm font-medium text-foreground">{insight.title}</h4>
-            <span className={`text-[10px] font-bold ${config.text}`}>{insight.confidence}% conf.</span>
+            <h4 className="text-[13px] font-semibold text-foreground">{insight.title}</h4>
+            <span className={`text-[10px] font-bold ${config.text}`}>{insight.confidence}%</span>
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">{insight.description}</p>
           {insight.recommendation && (
-            <div className="mt-2 p-2 rounded-lg bg-muted/60 flex items-start gap-2">
-              <Stethoscope className="w-3.5 h-3.5 text-primary flex-shrink-0 mt-0.5" />
+            <div className="mt-2 p-2 rounded-md bg-muted/50 border border-border/30 flex items-start gap-2">
+              <Stethoscope className="w-3 h-3 text-primary flex-shrink-0 mt-0.5" />
               <p className="text-[11px] text-foreground leading-relaxed">{insight.recommendation}</p>
             </div>
           )}

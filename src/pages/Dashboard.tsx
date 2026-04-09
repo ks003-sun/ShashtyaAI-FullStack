@@ -14,11 +14,6 @@ const riskConfig = {
   low: { badge: "badge-risk-low", label: "Low" },
 };
 
-const tileColors = [
-  "bg-card",
-  "bg-muted/40",
-];
-
 export default function Dashboard() {
   const { patients } = usePatientData();
   const navigate = useNavigate();
@@ -47,16 +42,16 @@ export default function Dashboard() {
       <div className="flex gap-6">
         {/* Main content area */}
         <div className="flex-1 min-w-0 space-y-6">
-          {/* AI Companion — full-width top */}
+          {/* AI Companion */}
           <AICompanionPanel />
 
-          {/* Priority Patients — landscape tiles */}
+          {/* Priority Patients */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl text-foreground">Priority Patients</h2>
-              <span className="text-xs text-muted-foreground">{sortedPatients.length} total</span>
+              <h2 className="font-display text-lg text-foreground">Priority Patients</h2>
+              <span className="text-[11px] text-muted-foreground font-medium">{sortedPatients.length} total</span>
             </div>
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {sortedPatients.slice(0, 10).map((p, i) => {
                 const risk = riskConfig[p.riskLevel];
                 return (
@@ -66,40 +61,30 @@ export default function Dashboard() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 }}
                     onClick={() => navigate(`/patient/${p.id}`)}
-                    className={`${tileColors[i % 2]} rounded-xl border border-border/60 p-4 cursor-pointer hover:shadow-md hover:border-primary/20 transition-all duration-200 group`}
+                    className="glass-card p-3.5 cursor-pointer hover:glow-primary hover:border-primary/30 transition-all duration-200 group"
                   >
                     <div className="flex items-center gap-4">
-                      {/* Avatar */}
-                      <div className="w-11 h-11 rounded-full bg-accent flex items-center justify-center text-sm font-bold text-accent-foreground flex-shrink-0">
+                      <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
                         {p.avatar}
                       </div>
-
-                      {/* Info */}
                       <div className="flex-1 min-w-0 flex items-center gap-6">
                         <div className="min-w-[140px]">
-                          <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors truncate">{p.name}</h3>
+                          <h3 className="text-[13px] font-semibold text-foreground group-hover:text-primary transition-colors truncate">{p.name}</h3>
                           <p className="text-[10px] text-muted-foreground">{p.age}y · {p.gender}</p>
                         </div>
-
-                        {/* Conditions */}
                         <div className="hidden md:flex flex-wrap gap-1 flex-1 min-w-0">
                           {p.conditions.slice(0, 3).map((c) => (
-                            <span key={c} className="px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground text-[10px] font-medium whitespace-nowrap">{c}</span>
+                            <span key={c} className="px-2 py-0.5 rounded-md bg-secondary/10 text-secondary text-[10px] font-medium whitespace-nowrap">{c}</span>
                           ))}
                           {p.conditions.length > 3 && <span className="text-[10px] text-muted-foreground">+{p.conditions.length - 3}</span>}
                         </div>
-
-                        {/* Location */}
                         {p.location && (
                           <span className="hidden lg:flex items-center gap-1 text-[10px] text-muted-foreground whitespace-nowrap">
                             <MapPin className="w-3 h-3" />{p.location}
                           </span>
                         )}
-
-                        {/* Risk badge */}
                         <span className={`${risk.badge} whitespace-nowrap flex-shrink-0`}>{risk.label}</span>
                       </div>
-
                       <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
                     </div>
                   </motion.div>
@@ -112,15 +97,15 @@ export default function Dashboard() {
           <NearestHospitals city={sortedPatients[0]?.location} />
         </div>
 
-        {/* Right sidebar — stat cards + alerts */}
-        <div className="hidden xl:block w-64 flex-shrink-0">
-          <div className="sticky top-8 space-y-4">
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground px-1">Overview</p>
+        {/* Right sidebar */}
+        <div className="hidden xl:block w-60 flex-shrink-0">
+          <div className="sticky top-8 space-y-3">
+            <p className="text-[9px] uppercase tracking-[0.15em] text-muted-foreground px-1 font-semibold">Overview</p>
             {statCards.map((s, i) => (
               <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} change={s.change} changeType={s.changeType} color={s.color} delay={i * 0.05} />
             ))}
 
-            <div className="pt-2 space-y-3">
+            <div className="pt-2 space-y-2">
               <h3 className="font-display text-sm text-foreground">Recent Alerts</h3>
               {criticalInsights.slice(0, 3).map((insight, i) => (
                 <InsightCard key={insight.id} insight={insight} index={i} />

@@ -6,13 +6,13 @@
 
 @layer base {
   :root {
-    --background: 180 20% 96%;
+    --background: 185 35% 95%;
     --foreground: 210 40% 10%;
 
-    --card: 180 15% 99%;
+    --card: 180 20% 98%;
     --card-foreground: 210 40% 10%;
 
-    --popover: 180 15% 99%;
+    --popover: 180 20% 98%;
     --popover-foreground: 210 40% 10%;
 
     --primary: 217 91% 60%;
@@ -21,8 +21,8 @@
     --secondary: 174 60% 41%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 180 15% 92%;
-    --muted-foreground: 210 12% 45%;
+    --muted: 185 20% 90%;
+    --muted-foreground: 210 12% 42%;
 
     --accent: 142 71% 45%;
     --accent-foreground: 0 0% 100%;
@@ -30,11 +30,11 @@
     --destructive: 0 75% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 180 15% 87%;
-    --input: 180 15% 85%;
+    --border: 185 18% 84%;
+    --input: 185 18% 82%;
     --ring: 217 91% 60%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     /* Healthcare tokens */
     --sage: 152 45% 32%;
@@ -44,52 +44,55 @@
     --coral-light: 0 55% 94%;
     --amber: 32 90% 48%;
     --amber-light: 32 65% 92%;
-    --teal: 195 55% 34%;
-    --teal-light: 195 38% 92%;
+    --teal: 174 60% 41%;
+    --teal-light: 174 38% 92%;
     --lavender: 260 40% 52%;
     --lavender-light: 260 30% 93%;
-    --cream: 210 20% 97%;
+    --cream: 185 20% 96%;
 
-    --sidebar-background: 185 35% 10%;
-    --sidebar-foreground: 180 12% 90%;
+    --sidebar-background: 200 50% 8%;
+    --sidebar-foreground: 185 15% 90%;
     --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 174 40% 18%;
-    --sidebar-accent-foreground: 180 12% 90%;
-    --sidebar-border: 185 20% 16%;
+    --sidebar-accent: 200 35% 14%;
+    --sidebar-accent-foreground: 185 15% 90%;
+    --sidebar-border: 200 30% 14%;
     --sidebar-ring: 217 91% 60%;
+
+    --glass-bg: 185 30% 97% / 0.7;
+    --glass-border: 185 20% 80% / 0.4;
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-body: 'IBM Plex Sans', sans-serif;
   }
 
   .dark {
-    --background: 185 30% 6%;
-    --foreground: 180 12% 92%;
-    --card: 185 25% 9%;
-    --card-foreground: 180 12% 92%;
-    --popover: 185 25% 9%;
-    --popover-foreground: 180 12% 92%;
+    --background: 200 45% 5%;
+    --foreground: 185 15% 92%;
+    --card: 200 40% 8%;
+    --card-foreground: 185 15% 92%;
+    --popover: 200 40% 8%;
+    --popover-foreground: 185 15% 92%;
     --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
     --secondary: 174 60% 30%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 185 18% 18%;
-    --muted-foreground: 180 12% 55%;
+    --muted: 200 25% 15%;
+    --muted-foreground: 185 12% 55%;
     --accent: 142 71% 35%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 60% 45%;
     --destructive-foreground: 0 0% 100%;
-    --border: 185 18% 18%;
-    --input: 185 18% 20%;
+    --border: 200 25% 16%;
+    --input: 200 25% 18%;
     --ring: 217 91% 60%;
-    --sidebar-background: 185 30% 5%;
-    --sidebar-foreground: 180 12% 85%;
+    --sidebar-background: 200 50% 4%;
+    --sidebar-foreground: 185 12% 85%;
     --sidebar-primary: 217 91% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 174 30% 12%;
+    --sidebar-accent: 200 30% 10%;
     --sidebar-accent-foreground: 174 55% 70%;
-    --sidebar-border: 185 18% 12%;
+    --sidebar-border: 200 25% 10%;
     --sidebar-ring: 217 91% 60%;
   }
 }
@@ -109,19 +112,29 @@
 }
 
 @layer utilities {
+  .glass-card {
+    @apply bg-card/70 backdrop-blur-xl border border-border/40 shadow-lg;
+    border-radius: var(--radius);
+  }
   .card-healthcare {
-    @apply bg-card rounded-xl border border-border shadow-sm;
+    @apply glass-card;
   }
   .badge-risk-high {
-    @apply bg-coral-light text-coral px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-coral-light text-coral px-2.5 py-0.5 rounded-md text-xs font-semibold;
   }
   .badge-risk-medium {
-    @apply bg-amber-light text-amber px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-amber-light text-amber px-2.5 py-0.5 rounded-md text-xs font-semibold;
   }
   .badge-risk-low {
-    @apply bg-sage-light text-sage px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-sage-light text-sage px-2.5 py-0.5 rounded-md text-xs font-semibold;
   }
   .stat-card {
-    @apply card-healthcare p-5 space-y-2;
+    @apply glass-card p-5 space-y-2;
+  }
+  .glow-primary {
+    box-shadow: 0 0 20px hsl(217 91% 60% / 0.15), 0 4px 16px hsl(217 91% 60% / 0.08);
+  }
+  .glow-teal {
+    box-shadow: 0 0 20px hsl(174 60% 41% / 0.15), 0 4px 16px hsl(174 60% 41% / 0.08);
   }
 }

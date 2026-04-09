@@ -17,6 +17,7 @@ import FamilyHealthPage from "@/pages/FamilyHealthPage";
 import MedicationsPage from "@/pages/MedicationsPage";
 import GPSTrackingPage from "@/pages/GPSTrackingPage";
 import PostCareContinuum from "@/pages/PostCareContinuum";
+import TreatmentProgressPage from "@/pages/TreatmentProgressPage";
 import Alerts from "@/pages/Alerts";
 import Settings from "@/pages/Settings";
 import NotFound from "./pages/NotFound";
@@ -44,6 +45,7 @@ const App = () => (
               <Route path="/medications" element={<MedicationsPage />} />
               <Route path="/tracking" element={<GPSTrackingPage />} />
               <Route path="/post-care" element={<PostCareContinuum />} />
+              <Route path="/treatment-progress" element={<TreatmentProgressPage />} />
               <Route path="/alerts" element={<Alerts />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
