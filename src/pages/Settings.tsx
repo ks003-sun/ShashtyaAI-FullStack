@@ -86,7 +86,7 @@ export default function Settings() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">{cg.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{cg.name.toLowerCase().replace(/\s+/g, ".")}@shastyaai.health</p>
+                    <p className="text-[10px] text-muted-foreground">{cg.name.toLowerCase().replace(/\s+/g, ".")}@medhaai.health</p>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-sage-light text-sage text-[10px] font-medium">Primary Caregiver</span>

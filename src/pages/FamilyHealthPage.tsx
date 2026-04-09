@@ -25,7 +25,7 @@ export default function FamilyHealthPage() {
         <Input placeholder="Search by patient or family member..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10 bg-card/60 border-border/40" />
       </div>
 
-      <div className="space-y-4">
+      <div className="grid md:grid-cols-2 gap-4">
         {filtered.map((patient, i) => {
           const isExpanded = expandedPatient === patient.id;
           // Gather shared conditions between patient and family
@@ -40,7 +40,7 @@ export default function FamilyHealthPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="card-healthcare overflow-hidden"
+              className="glass-card overflow-hidden"
             >
               {/* Patient header */}
               <button
