@@ -20,12 +20,12 @@ function AnimatedRiskScore() {
 
   return (
     <motion.div
-      className="border border-border/30 bg-card/60 backdrop-blur-xl rounded-md p-4 space-y-2"
+      className="border border-border/30 bg-card/60 backdrop-blur-xl rounded p-4 space-y-2"
       whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }}
       transition={{ type: "spring", stiffness: 300 }}
     >
       <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
-        <Activity className="w-3 h-3 text-teal" />
+        <Activity className="w-3 h-3 text-secondary" />
         Live Risk Index
       </div>
       <div className="flex items-end gap-2">
@@ -44,14 +44,14 @@ function PredictiveGraph() {
   const predictedPoints = "270,25 300,20 330,22 360,15";
 
   return (
-    <motion.div className="border border-border/30 bg-card/60 backdrop-blur-xl rounded-md p-4" whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }} transition={{ type: "spring", stiffness: 300 }}>
+    <motion.div className="border border-border/30 bg-card/60 backdrop-blur-xl rounded p-4" whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }} transition={{ type: "spring", stiffness: 300 }}>
       <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase tracking-wider font-semibold mb-2">
         <TrendingUp className="w-3 h-3 text-primary" />HbA1c Predictive Trend
       </div>
       <svg viewBox="0 0 380 80" className="w-full h-14">
-        <motion.polyline points={points} fill="none" stroke="hsl(var(--teal))" strokeWidth="2" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.5 }} />
+        <motion.polyline points={points} fill="none" stroke="hsl(var(--secondary))" strokeWidth="2" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 2, delay: 0.5 }} />
         <motion.polyline points={predictedPoints} fill="none" stroke="hsl(var(--primary))" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 2.5 }} />
-        <motion.circle cx="270" cy="25" r="3" fill="hsl(var(--teal))" initial={{ scale: 0 }} animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity, delay: 2.5 }} />
+        <motion.circle cx="270" cy="25" r="3" fill="hsl(var(--secondary))" initial={{ scale: 0 }} animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 2, repeat: Infinity, delay: 2.5 }} />
       </svg>
       <div className="flex justify-between text-[9px] text-muted-foreground mt-1">
         <span>6 months ago</span>
@@ -64,7 +64,7 @@ function PredictiveGraph() {
 function DataModule({ icon: Icon, label, value, sub }: { icon: React.ElementType; label: string; value: string; sub: string }) {
   return (
     <motion.div
-      className="border border-border/30 bg-card/60 backdrop-blur-xl rounded-md p-4"
+      className="border border-border/30 bg-card/60 backdrop-blur-xl rounded p-4"
       whileHover={{ scale: 1.02, borderColor: "hsl(var(--primary) / 0.3)" }}
       transition={{ type: "spring", stiffness: 300 }}
     >
@@ -101,7 +101,7 @@ export default function SplashPage() {
 
   return (
     <AnimatePresence>
-      <motion.div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-background to-teal-light/30" initial={{ opacity: 1 }} animate={transitioning ? { opacity: 0, scale: 1.02 } : { opacity: 1 }} transition={{ duration: 1 }}>
+      <motion.div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-background to-muted/30" initial={{ opacity: 1 }} animate={transitioning ? { opacity: 0, scale: 1.02 } : { opacity: 1 }} transition={{ duration: 1 }}>
         <GridLines />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/4 blur-[150px] pointer-events-none" />
 
@@ -131,7 +131,7 @@ export default function SplashPage() {
             <div className="grid lg:grid-cols-2 gap-16 items-center w-full">
               <motion.div className="space-y-8" initial={{ opacity: 0, x: -40 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.3 }}>
                 <div className="space-y-5">
-                  <motion.div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-primary/8 border border-primary/15 text-[10px] text-primary font-semibold uppercase tracking-wider">
+                  <motion.div className="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-primary/8 border border-primary/15 text-[10px] text-primary font-semibold uppercase tracking-wider">
                     <Cpu className="w-3 h-3" />AI-Powered Healthcare Platform
                   </motion.div>
                   <h1 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] text-foreground leading-[1.1] tracking-tight">
@@ -143,7 +143,7 @@ export default function SplashPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <motion.button onClick={handleEnter} className="group relative px-8 py-3.5 rounded-md bg-primary text-primary-foreground font-semibold text-sm tracking-wide overflow-hidden glow-primary" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <motion.button onClick={handleEnter} className="group relative px-8 py-3.5 rounded bg-primary text-primary-foreground font-semibold text-sm tracking-wide overflow-hidden glow-primary" whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                     <span className="relative z-10 flex items-center gap-2">Enter Platform<motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>→</motion.span></span>
                   </motion.button>
                   <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">

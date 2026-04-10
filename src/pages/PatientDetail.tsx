@@ -68,7 +68,7 @@ export default function PatientDetail() {
         <div className="card-healthcare p-6">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center text-xl font-bold text-accent-foreground">
+              <div className="w-16 h-16 rounded-lg bg-primary/10 flex items-center justify-center text-xl font-bold text-primary">
                 {patient.avatar}
               </div>
               <div>
@@ -95,20 +95,22 @@ export default function PatientDetail() {
           </div>
           <div className="flex flex-wrap gap-1.5 mt-4">
             {patient.conditions.map((c) => (
-              <span key={c} className="px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">{c}</span>
+              <span key={c} className="px-2.5 py-1 rounded bg-secondary/10 text-secondary text-xs font-medium">{c}</span>
             ))}
           </div>
         </div>
       </motion.div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
+      {/* Two-column balanced grid — ONLY this patient's data */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Vitals + Medications */}
+        <div className="space-y-6">
           <h2 className="font-display text-xl text-foreground">Vitals Trends</h2>
           <div className="grid sm:grid-cols-2 gap-4">
-            <VitalsChart data={patient.vitals} metric="bloodPressure" title="Blood Pressure (mmHg)" color="hsl(4, 70%, 58%)" />
-            <VitalsChart data={patient.vitals} metric="heartRate" title="Heart Rate (bpm)" color="hsl(160, 30%, 38%)" />
-            <VitalsChart data={patient.vitals} metric="bloodSugar" title="Blood Sugar (mg/dL)" color="hsl(38, 85%, 55%)" />
-            <VitalsChart data={patient.vitals} metric="oxygenSat" title="Oxygen Saturation (%)" color="hsl(180, 35%, 42%)" />
+            <VitalsChart data={patient.vitals} metric="bloodPressure" title="Blood Pressure (mmHg)" color="hsl(263, 70%, 58%)" />
+            <VitalsChart data={patient.vitals} metric="heartRate" title="Heart Rate (bpm)" color="hsl(24, 94%, 53%)" />
+            <VitalsChart data={patient.vitals} metric="bloodSugar" title="Blood Sugar (mg/dL)" color="hsl(48, 96%, 53%)" />
+            <VitalsChart data={patient.vitals} metric="oxygenSat" title="Oxygen Saturation (%)" color="hsl(152, 45%, 32%)" />
           </div>
 
           <h2 className="font-display text-xl text-foreground">Medications ({patient.medications.length})</h2>
@@ -171,7 +173,7 @@ export default function PatientDetail() {
               <div key={rx.id} className="card-healthcare p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[10px] text-muted-foreground">{rx.date}</p>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-light text-amber font-medium uppercase">{rx.status}</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded bg-amber-light text-amber font-medium uppercase">{rx.status}</span>
                 </div>
                 <div className="space-y-1">
                   {rx.medications.map((m, i) => (
@@ -185,7 +187,7 @@ export default function PatientDetail() {
             ))}
           </div>
 
-          {/* Caregiver Logs */}
+          {/* Caregiver Logs — only this patient */}
           {logs.length > 0 && (
             <>
               <h2 className="font-display text-xl text-foreground">Caregiver Observations</h2>
@@ -196,7 +198,7 @@ export default function PatientDetail() {
                     {log.weight && <p><span className="text-muted-foreground">Weight:</span> <span className="font-medium text-foreground">{log.weight}</span></p>}
                     {log.symptoms && <p className="text-amber mt-1">{log.symptoms}</p>}
                     {log.notes && <p className="text-muted-foreground mt-1">{log.notes}</p>}
-                    {log.additionalMeds && <p className="text-teal mt-1">+ {log.additionalMeds}</p>}
+                    {log.additionalMeds && <p className="text-secondary mt-1">+ {log.additionalMeds}</p>}
                   </div>
                 ))}
               </div>
@@ -204,6 +206,7 @@ export default function PatientDetail() {
           )}
         </div>
 
+        {/* Right: Risk Engine, Follow-ups, Insights, Daily Care, Family — ONLY this patient */}
         <div className="space-y-6">
           <VitalsRiskEngine patient={patient} />
 
@@ -218,15 +221,15 @@ export default function PatientDetail() {
             ))}
           </div>
 
-          {/* Daily Care Suggestions */}
+          {/* Daily Care Suggestions — only this patient */}
           {suggestions.length > 0 && (
             <>
               <h2 className="font-display text-xl text-foreground flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-teal" /> Daily Care Suggestions
+                <Sparkles className="w-5 h-5 text-secondary" /> Daily Care Suggestions
               </h2>
               <div className="space-y-2">
                 {suggestions.map((s) => {
-                  const categoryColors = { physical: "teal", mental: "lavender", lifestyle: "sage" };
+                  const categoryColors = { physical: "secondary", mental: "primary", lifestyle: "sage" };
                   const color = categoryColors[s.category];
                   return (
                     <div key={s.id} className={`card-healthcare p-3 ${s.completed ? "opacity-60" : ""}`}>
