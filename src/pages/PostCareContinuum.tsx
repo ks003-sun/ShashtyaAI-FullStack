@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Heart, Bone, Brain, Clock, TrendingUp, TrendingDown, CheckCircle, AlertTriangle, Calendar, Users, Pill, ChevronRight } from "lucide-react";
+import { Activity, Heart, Bone, Brain, Clock, CheckCircle, AlertTriangle, Calendar, Users, Pill, ChevronRight } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
 import { usePatientData } from "@/context/PatientDataContext";
 import { useNavigate } from "react-router-dom";
@@ -40,24 +41,35 @@ const chronicPrograms = [
 ];
 
 const geriatricProtocols = [
-  { title: "Fall Prevention Program", description: "Comprehensive home safety assessment, balance training, medication review for fall-risk drugs (Beers Criteria), vitamin D supplementation, and hip protector fitting.", icon: AlertTriangle, patients: 8, color: "coral" },
-  { title: "Cognitive Decline Monitoring", description: "Serial MMSE/MoCA scoring, caregiver burden assessment, behavioral symptom management, driving safety evaluation, and advanced care planning.", icon: Brain, patients: 4, color: "lavender" },
-  { title: "Polypharmacy Review", description: "Quarterly medication reconciliation using STOPP/START criteria, deprescribing protocol for inappropriate medications, drug interaction screening, and renal dose adjustments.", icon: Pill, patients: 12, color: "amber" },
-  { title: "Nutritional Support", description: "MNA (Mini Nutritional Assessment) screening, dietitian referral for patients with BMI <22, oral supplement prescription, dysphagia evaluation, and feeding assistance planning.", icon: Activity, patients: 6, color: "sage" },
+  { title: "Fall Prevention Program", description: "Comprehensive home safety assessment, balance training, medication review for fall-risk drugs.", icon: AlertTriangle, patients: 8, color: "coral" },
+  { title: "Cognitive Decline Monitoring", description: "Serial MMSE/MoCA scoring, caregiver burden assessment, behavioral symptom management.", icon: Brain, patients: 4, color: "lavender" },
+  { title: "Polypharmacy Review", description: "Quarterly medication reconciliation using STOPP/START criteria, deprescribing protocol.", icon: Pill, patients: 12, color: "amber" },
+  { title: "Nutritional Support", description: "MNA screening, dietitian referral, oral supplement prescription, dysphagia evaluation.", icon: Activity, patients: 6, color: "sage" },
 ];
 
 export default function PostCareContinuum() {
   const { patients } = usePatientData();
   const navigate = useNavigate();
+  const { id: patientId } = useParams();
   const [activeTab, setActiveTab] = useState<TabId>("surgical");
 
-  const surgicalPatients = patients.filter(p => p.conditions.some(c => c.startsWith("Post-")));
-  const geriatricPatients = patients.filter(p => p.age >= 65);
-  const chronicPatients = patients.filter(p => p.conditions.some(c => ["Type 2 Diabetes", "Type 1 Diabetes", "Congestive Heart Failure", "COPD", "Chronic Kidney Disease Stage 3a", "Atrial Fibrillation"].some(ch => c.includes(ch))));
+  // If accessed with a patient ID, scope to that patient only
+  const scopedPatients = patientId
+    ? patients.filter(p => p.id === patientId)
+    : patients;
+
+  const surgicalPatients = scopedPatients.filter(p => p.conditions.some(c => c.startsWith("Post-")));
+  const geriatricPatients = scopedPatients.filter(p => p.age >= 65);
+  const chronicPatients = scopedPatients.filter(p => p.conditions.some(c => ["Type 2 Diabetes", "Type 1 Diabetes", "Congestive Heart Failure", "COPD", "Chronic Kidney Disease Stage 3a", "Atrial Fibrillation"].some(ch => c.includes(ch))));
+
+  const scopedPatient = patientId ? patients.find(p => p.id === patientId) : null;
 
   return (
     <div>
-      <DashboardHeader title="Post-Care Continuum" subtitle="Surgical recovery, chronic disease, and geriatric care pathways" />
+      <DashboardHeader
+        title={scopedPatient ? `Post-Care: ${scopedPatient.name}` : "Post-Care Continuum"}
+        subtitle={scopedPatient ? `${scopedPatient.age}y · ${scopedPatient.conditions.join(", ")}` : "Surgical recovery, chronic disease, and geriatric care pathways"}
+      />
 
       {/* Tabs */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
@@ -65,7 +77,7 @@ export default function PostCareContinuum() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+            className={`flex items-center gap-2 px-4 py-2.5 rounded text-sm font-medium whitespace-nowrap transition-all ${
               activeTab === tab.id
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -73,7 +85,7 @@ export default function PostCareContinuum() {
           >
             <tab.icon className="w-4 h-4" />
             {tab.label}
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === tab.id ? "bg-primary-foreground/20" : "bg-muted"}`}>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded ${activeTab === tab.id ? "bg-primary-foreground/20" : "bg-muted"}`}>
               {tab.id === "surgical" ? surgicalPatients.length : tab.id === "chronic" ? chronicPatients.length : geriatricPatients.length}
             </span>
           </button>
@@ -83,10 +95,9 @@ export default function PostCareContinuum() {
       <AnimatePresence mode="wait">
         <motion.div key={activeTab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
 
-          {/* SURGICAL RECOVERY */}
           {activeTab === "surgical" && (
             <div className="space-y-6">
-              <div className="grid lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {surgicalPatients.map((p) => {
                   const surgicalCondition = p.conditions.find(c => c.startsWith("Post-")) || "";
                   const milestones = recoveryMilestones[surgicalCondition] || [];
@@ -97,21 +108,19 @@ export default function PostCareContinuum() {
                     <motion.div key={p.id} className="card-healthcare p-5 space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate(`/patient/${p.id}`)}>
-                          <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-sm font-bold text-accent-foreground">{p.avatar}</div>
+                          <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">{p.avatar}</div>
                           <div>
                             <h3 className="text-sm font-medium text-foreground hover:text-primary transition-colors">{p.name}</h3>
                             <p className="text-[10px] text-muted-foreground">{p.age}y · {surgicalCondition}</p>
                           </div>
                         </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">{progress}% complete</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">{progress}% complete</span>
                       </div>
 
-                      {/* Progress bar */}
                       <div className="h-2 rounded-full bg-muted overflow-hidden">
-                        <motion.div className="h-full rounded-full bg-gradient-to-r from-primary to-teal" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 1, ease: "easeOut" }} />
+                        <motion.div className="h-full rounded-full bg-gradient-to-r from-primary to-secondary" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 1, ease: "easeOut" }} />
                       </div>
 
-                      {/* Milestones */}
                       <div className="space-y-2">
                         {milestones.map((m, i) => (
                           <div key={i} className={`flex items-start gap-2.5 text-xs ${m.status === "upcoming" ? "opacity-50" : ""}`}>
@@ -131,25 +140,22 @@ export default function PostCareContinuum() {
                   );
                 })}
               </div>
-
               {surgicalPatients.length === 0 && (
-                <div className="card-healthcare p-12 text-center text-muted-foreground">No post-surgical patients currently in the system</div>
+                <div className="card-healthcare p-12 text-center text-muted-foreground">No post-surgical patients {patientId ? "for this patient" : "currently in the system"}</div>
               )}
             </div>
           )}
 
-          {/* CHRONIC DISEASE */}
           {activeTab === "chronic" && (
             <div className="space-y-6">
-              {/* Program cards */}
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {chronicPrograms.map((prog, i) => {
                   const enrolled = chronicPatients.filter(p => p.conditions.some(c => c.includes(prog.condition.split(" ")[0]))).length;
                   return (
                     <motion.div key={prog.condition} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="card-healthcare p-5 space-y-3">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-medium text-foreground">{prog.condition} Pathway</h3>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-teal/10 text-teal font-medium">{enrolled} enrolled</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-secondary/10 text-secondary font-medium">{enrolled} enrolled</span>
                       </div>
                       <div className="flex gap-1">
                         {prog.stages.map((stage, si) => (
@@ -165,7 +171,6 @@ export default function PostCareContinuum() {
                 })}
               </div>
 
-              {/* Enrolled patients list */}
               <div>
                 <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2"><Users className="w-4 h-4 text-primary" />Enrolled Patients</h3>
                 <div className="space-y-2">
@@ -173,7 +178,7 @@ export default function PostCareContinuum() {
                     <motion.div key={p.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
                       onClick={() => navigate(`/patient/${p.id}`)}
                       className="card-healthcare p-3 flex items-center gap-3 cursor-pointer hover:border-primary/30 transition-colors">
-                      <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-xs font-bold text-accent-foreground">{p.avatar}</div>
+                      <div className="w-9 h-9 rounded bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">{p.avatar}</div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
                         <p className="text-[10px] text-muted-foreground">{p.age}y · {p.conditions.slice(0, 2).join(", ")}</p>
@@ -189,15 +194,13 @@ export default function PostCareContinuum() {
             </div>
           )}
 
-          {/* GERIATRIC CARE */}
           {activeTab === "geriatric" && (
             <div className="space-y-6">
-              {/* Protocol cards */}
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {geriatricProtocols.map((proto, i) => (
                   <motion.div key={proto.title} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="card-healthcare p-5 space-y-3">
                     <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-xl bg-${proto.color}-light flex items-center justify-center`}>
+                      <div className={`w-9 h-9 rounded bg-${proto.color}-light flex items-center justify-center`}>
                         <proto.icon className={`w-4 h-4 text-${proto.color}`} />
                       </div>
                       <div className="flex-1">
@@ -210,7 +213,6 @@ export default function PostCareContinuum() {
                 ))}
               </div>
 
-              {/* Geriatric patients */}
               <div>
                 <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2"><Users className="w-4 h-4 text-primary" />Geriatric Patients (65+)</h3>
                 <div className="space-y-2">
@@ -218,7 +220,7 @@ export default function PostCareContinuum() {
                     <motion.div key={p.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
                       onClick={() => navigate(`/patient/${p.id}`)}
                       className="card-healthcare p-3 flex items-center gap-3 cursor-pointer hover:border-primary/30 transition-colors">
-                      <div className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-xs font-bold text-accent-foreground">{p.avatar}</div>
+                      <div className="w-9 h-9 rounded bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">{p.avatar}</div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
                         <p className="text-[10px] text-muted-foreground">{p.age}y · {p.conditions.slice(0, 2).join(", ")}</p>

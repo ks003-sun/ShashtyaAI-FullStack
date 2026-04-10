@@ -28,7 +28,7 @@ export default function StatCard({ icon: Icon, label, value, change, changeType 
       className="glass-card p-4 space-y-2 hover:glow-primary transition-shadow duration-300"
     >
       <div className="flex items-center justify-between">
-        <div className={`w-9 h-9 rounded-md flex items-center justify-center ${colorMap[color]}`}>
+        <div className={`w-9 h-9 rounded flex items-center justify-center ${colorMap[color]}`}>
           <Icon className="w-4 h-4" />
         </div>
         {change && (

@@ -51,7 +51,7 @@ export default function AppSidebar() {
             <NavLink
               key={item.path}
               to={item.path}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all duration-150 ${
+              className={`flex items-center gap-3 px-3 py-2 rounded text-[13px] font-medium transition-all duration-150 ${
                 isActive
                   ? "bg-sidebar-accent text-sidebar-primary glow-primary"
                   : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
@@ -60,7 +60,7 @@ export default function AppSidebar() {
               <item.icon className="w-4 h-4" />
               {item.label}
               {item.label === "AI Insights" && (
-                <span className="ml-auto w-2 h-2 rounded-full bg-coral animate-pulse-gentle" />
+                <span className="ml-auto w-2 h-2 rounded-full bg-secondary animate-pulse-gentle" />
               )}
             </NavLink>
           );
@@ -73,19 +73,19 @@ export default function AppSidebar() {
           <NavLink
             key={item.path}
             to={item.path}
-            className="flex items-center gap-3 px-3 py-2 rounded-md text-[13px] text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all"
+            className="flex items-center gap-3 px-3 py-2 rounded text-[13px] text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all"
           >
             <item.icon className="w-4 h-4" />
             {item.label}
             {item.label === "Alerts" && unacknowledgedCount > 0 && (
-              <span className="ml-auto px-1.5 py-0.5 rounded-md bg-red-600 text-white text-[10px] font-bold animate-pulse min-w-[18px] text-center">
+              <span className="ml-auto px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground text-[10px] font-bold animate-pulse min-w-[18px] text-center">
                 {unacknowledgedCount}
               </span>
             )}
           </NavLink>
         ))}
         {/* Doctor Info */}
-        <div className="mt-3 p-3 rounded-md bg-sidebar-accent/50 border border-sidebar-border/50">
+        <div className="mt-3 p-3 rounded bg-sidebar-accent/50 border border-sidebar-border/50">
           <p className="text-xs font-medium text-sidebar-foreground">Dr. Rithika Singh</p>
           <p className="text-[10px] text-muted-foreground">Internal Medicine</p>
         </div>

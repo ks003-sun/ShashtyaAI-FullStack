@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Trophy, Star, Target, Clock, Calendar, CheckCircle, Circle, Zap, Award, TrendingUp, Stethoscope, ChevronRight } from "lucide-react";
 import DashboardHeader from "@/components/DashboardHeader";
@@ -27,7 +28,7 @@ interface PatientTreatment {
 const recoveryStageConfig = {
   acute: { label: "Acute Phase", color: "text-coral", bg: "bg-coral-light" },
   rehabilitation: { label: "Rehabilitation", color: "text-amber", bg: "bg-amber-light" },
-  maintenance: { label: "Maintenance", color: "text-primary", bg: "bg-teal-light" },
+  maintenance: { label: "Maintenance", color: "text-primary", bg: "bg-lavender-light" },
   discharged: { label: "Discharged", color: "text-sage", bg: "bg-sage-light" },
 };
 
@@ -107,13 +108,24 @@ const mockTreatments: Record<string, PatientTreatment> = {
 export default function TreatmentProgressPage() {
   const { patients } = usePatientData();
   const navigate = useNavigate();
-  const [selectedPatient, setSelectedPatient] = useState<string>("p1");
+  const { id: patientIdParam } = useParams();
 
-  const treatmentPatients = patients.filter(p => mockTreatments[p.id]);
+  // If accessed with a patient ID param, scope to that patient
+  const treatmentPatients = patientIdParam
+    ? patients.filter(p => p.id === patientIdParam && mockTreatments[p.id])
+    : patients.filter(p => mockTreatments[p.id]);
+
+  const [selectedPatient, setSelectedPatient] = useState<string>(patientIdParam || "p1");
+
   const treatment = mockTreatments[selectedPatient];
   const patient = patients.find(p => p.id === selectedPatient);
 
-  if (!treatment || !patient) return null;
+  if (!treatment || !patient) return (
+    <div>
+      <DashboardHeader title="Treatment Progress" subtitle="Gamified recovery tracking" />
+      <div className="card-healthcare p-12 text-center text-muted-foreground">No treatment data available for this patient</div>
+    </div>
+  );
 
   const stageConfig = recoveryStageConfig[treatment.recoveryStage];
   const completedCount = treatment.milestones.filter(m => m.completed).length;
@@ -123,38 +135,40 @@ export default function TreatmentProgressPage() {
       <DashboardHeader title="Treatment Progress" subtitle="Gamified recovery tracking with milestones and achievements" />
 
       {/* Patient selector */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-        {treatmentPatients.map((p) => {
-          const t = mockTreatments[p.id];
-          const isActive = selectedPatient === p.id;
-          return (
-            <button
-              key={p.id}
-              onClick={() => setSelectedPatient(p.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-[13px] font-medium whitespace-nowrap transition-all ${
-                isActive
-                  ? "bg-primary text-primary-foreground glow-primary"
-                  : "glass-card text-muted-foreground hover:text-foreground hover:border-primary/30"
-              }`}
-            >
-              <span className="text-sm">{p.avatar}</span>
-              {p.name}
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${isActive ? "bg-primary-foreground/20" : "bg-muted"}`}>
-                {t.completionPercent}%
-              </span>
-            </button>
-          );
-        })}
-      </div>
+      {!patientIdParam && (
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+          {treatmentPatients.map((p) => {
+            const t = mockTreatments[p.id];
+            const isActive = selectedPatient === p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setSelectedPatient(p.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded text-[13px] font-medium whitespace-nowrap transition-all ${
+                  isActive
+                    ? "bg-primary text-primary-foreground glow-primary"
+                    : "glass-card text-muted-foreground hover:text-foreground hover:border-primary/30"
+                }`}
+              >
+                <span className="text-sm">{p.avatar}</span>
+                {p.name}
+                <span className={`text-[10px] px-1.5 py-0.5 rounded ${isActive ? "bg-primary-foreground/20" : "bg-muted"}`}>
+                  {t.completionPercent}%
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Main progress */}
-        <div className="lg:col-span-2 space-y-5">
+        <div className="space-y-5">
           {/* Progress overview card */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-5">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center text-lg font-bold text-primary">
+                <div className="w-12 h-12 rounded bg-primary/10 flex items-center justify-center text-lg font-bold text-primary">
                   {patient.avatar}
                 </div>
                 <div>
@@ -163,10 +177,10 @@ export default function TreatmentProgressPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className={`text-[11px] px-2.5 py-1 rounded-md font-semibold ${stageConfig.bg} ${stageConfig.color}`}>
+                <span className={`text-[11px] px-2.5 py-1 rounded font-semibold ${stageConfig.bg} ${stageConfig.color}`}>
                   {stageConfig.label}
                 </span>
-                <button onClick={() => navigate(`/patient/${patient.id}`)} className="p-1.5 rounded-md hover:bg-muted transition-colors">
+                <button onClick={() => navigate(`/patient/${patient.id}`)} className="p-1.5 rounded hover:bg-muted transition-colors">
                   <ChevronRight className="w-4 h-4 text-muted-foreground" />
                 </button>
               </div>
@@ -187,9 +201,9 @@ export default function TreatmentProgressPage() {
           </motion.div>
 
           {/* Last Surgical Procedure */}
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-5 border-l-[3px] border-l-primary">
+          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-5 border-l-[3px] border-l-secondary">
             <div className="flex items-center gap-2 mb-3">
-              <Stethoscope className="w-4 h-4 text-primary" />
+              <Stethoscope className="w-4 h-4 text-secondary" />
               <h3 className="text-[13px] font-semibold text-foreground">Last Surgical Procedure</h3>
             </div>
             <div className="grid sm:grid-cols-3 gap-4">
@@ -203,7 +217,7 @@ export default function TreatmentProgressPage() {
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium mb-1">Status</p>
-                <p className="text-sm font-medium text-accent flex items-center gap-1"><CheckCircle className="w-3 h-3" />Completed</p>
+                <p className="text-sm font-medium text-sage flex items-center gap-1"><CheckCircle className="w-3 h-3" />Completed</p>
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-3 leading-relaxed border-t border-border/30 pt-3">{treatment.lastProcedure.description}</p>
@@ -215,7 +229,6 @@ export default function TreatmentProgressPage() {
               <Target className="w-4 h-4 text-primary" />Treatment Timeline
             </h3>
             <div className="relative">
-              {/* Vertical line */}
               <div className="absolute left-[11px] top-2 bottom-2 w-[2px] bg-border" />
               <div className="space-y-3">
                 {treatment.milestones.map((milestone, i) => (
@@ -224,16 +237,16 @@ export default function TreatmentProgressPage() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className={`flex items-start gap-3 pl-0 ${!milestone.completed ? "opacity-60" : ""}`}
+                    className={`flex items-start gap-3 ${!milestone.completed ? "opacity-60" : ""}`}
                   >
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 z-10 ${
                       milestone.completed
-                        ? "bg-accent text-accent-foreground"
+                        ? "bg-sage text-primary-foreground"
                         : "bg-muted border-2 border-border text-muted-foreground"
                     }`}>
                       {milestone.completed ? <CheckCircle className="w-3.5 h-3.5" /> : <Circle className="w-3 h-3" />}
                     </div>
-                    <div className="flex-1 glass-card p-3 !rounded-md">
+                    <div className="flex-1 glass-card p-3">
                       <div className="flex items-center justify-between mb-1">
                         <p className="text-[13px] font-semibold text-foreground">{milestone.label}</p>
                         <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Calendar className="w-2.5 h-2.5" />{milestone.date}</span>
@@ -247,7 +260,7 @@ export default function TreatmentProgressPage() {
           </motion.div>
         </div>
 
-        {/* Right sidebar: Badges & Stats */}
+        {/* Right: Badges & Stats */}
         <div className="space-y-5">
           {/* Badges */}
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass-card p-5">
@@ -261,9 +274,9 @@ export default function TreatmentProgressPage() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: i * 0.05 }}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-md border transition-all ${
+                  className={`flex flex-col items-center gap-1.5 p-3 rounded border transition-all ${
                     badge.earned
-                      ? "border-amber/30 bg-amber-light/50 glow-teal"
+                      ? "border-amber/30 bg-amber-light/50"
                       : "border-border/30 bg-muted/30 opacity-40 grayscale"
                   }`}
                 >
@@ -305,9 +318,9 @@ export default function TreatmentProgressPage() {
                 const isCurrent = treatment.recoveryStage === stage;
                 const isPast = ["acute", "rehabilitation", "maintenance", "discharged"].indexOf(treatment.recoveryStage) > i;
                 return (
-                  <div key={stage} className={`flex items-center gap-2 p-2 rounded-md transition-all ${isCurrent ? config.bg + " border border-current/10" : ""}`}>
+                  <div key={stage} className={`flex items-center gap-2 p-2 rounded transition-all ${isCurrent ? config.bg + " border border-current/10" : ""}`}>
                     <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
-                      isPast ? "bg-accent text-accent-foreground" : isCurrent ? "bg-primary text-primary-foreground animate-pulse" : "bg-muted text-muted-foreground"
+                      isPast ? "bg-sage text-primary-foreground" : isCurrent ? "bg-primary text-primary-foreground animate-pulse" : "bg-muted text-muted-foreground"
                     }`}>
                       {isPast ? <CheckCircle className="w-3 h-3" /> : <span className="text-[8px] font-bold">{i + 1}</span>}
                     </div>
